@@ -1,27 +1,35 @@
 {
   "name": "cubiculo-digital-v3",
-  "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "20.x",
+    "pnpm": "10.28.1"
+  },
   "scripts": {
-    "build": "tsc", 
-    "start": "node dist/index.js",
-    "prisma:generate": "prisma generate",
-    "lint": "eslint"
+    "preinstall": "corepack enable",
+    "build:api": "pnpm --filter @cubiculo/api build",
+    "build:web": "pnpm --filter @cubiculo/web build",
+    "build": "pnpm run build:api && pnpm run build:web",
+
+    "start": "node apps/api/dist/index.js"
   },
   "dependencies": {
     "next": "16.1.5",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "graphql": "^16.8.1",
+    "graphql-yoga": "^5.7.0",
+    "@envelop/core": "^5.5.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.5",
+    "concurrently": "^8.2.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "@tailwindcss/postcss": "^4",
+    "ts-node": "^10.9.1"
   },
-  "packageManager": "pnpm@10.28.1+sha512.7d7dbbca9e99447b7c3bf7a73286afaaf6be99251eb9498baefa7d406892f67b879adb3a1d7e687fc4ccc1a388c7175fbaae567a26ab44d1067b54fcb0d6a316"
+  "packageManager": "pnpm@10.28.1"
 }
