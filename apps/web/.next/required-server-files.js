@@ -11,7 +11,7 @@ self.__SERVER_FILES_MANIFEST={
     "cleanDistDir": true,
     "assetPrefix": "",
     "cacheMaxMemorySize": 52428800,
-    "configOrigin": "../../next.config.ts",
+    "configOrigin": "next.config.ts",
     "useFileSystemPublicRoutes": true,
     "generateEtags": true,
     "pageExtensions": [
@@ -209,6 +209,7 @@ self.__SERVER_FILES_MANIFEST={
       "turbopackFileSystemCacheForDev": true,
       "turbopackFileSystemCacheForBuild": false,
       "turbopackInferModuleSideEffects": false,
+      "turbo": false,
       "optimizePackageImports": [
         "lucide-react",
         "date-fns",
