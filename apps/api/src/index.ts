@@ -13,46 +13,37 @@ const yoga = createYoga({
 });
 
 const server = createServer((req, res) => {
-  if (req.method === 'GET' && req.url === '/health') {
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+if (req.method === 'GET' && req.url === '/health') {
+  let dbStatus = 'disabled';
 
-    res.end(`
-      <!doctype html>
-      <html>
-        <head>
-          <title>Healthcheck</title>
-          <style>
-            body {
-              font-family: system-ui, sans-serif;
-              background: #0f172a;
-              color: #e5e7eb;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 100vh;
-            }
-            .card {
-              background: #020617;
-              border-radius: 12px;
-              padding: 24px 32px;
-              box-shadow: 0 20px 40px rgba(0,0,0,.4);
-            }
-            .ok { color: #22c55e; }
-          </style>
-        </head>
-        <body>
-          <div class="card">
-            <h2 class="ok">✔ API OK</h2>
-            <p>Service: api</p>
-            <p>Status: running</p>
-            <p>Time: ${new Date().toISOString()}</p>
-          </div>
-        </body>
-      </html>
-    `);
+  if (process.env.HEALTHCHECK_DB === 'true') {
+    try {
+      const { prisma } = await import('@cubiculo/db');
+      const { checkDatabase } = await import('./health.js');
 
-    return;
+      const result = await checkDatabase(prisma);
+      dbStatus = result.ok ? 'connected' : `error: ${result.error}`;
+    } catch {
+      dbStatus = 'failed to load db';
+    }
   }
+
+  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+  res.end(`
+    <!doctype html>
+    <html>
+      <body style="font-family:system-ui;background:#020617;color:#e5e7eb;display:flex;justify-content:center;align-items:center;height:100vh">
+        <div style="background:#020617;padding:24px 32px;border-radius:12px;box-shadow:0 20px 40px rgba(0,0,0,.4)">
+          <h2 style="color:#22c55e">✔ API OK</h2>
+          <p>Service: api</p>
+          <p>DB: ${dbStatus}</p>
+          <p>Time: ${new Date().toISOString()}</p>
+        </div>
+      </body>
+    </html>
+  `);
+  return;
+}
 
   return yoga(req, res);
 });

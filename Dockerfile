@@ -5,6 +5,8 @@ FROM node:20 AS builder
 
 WORKDIR /app
 
+ENV CI=true
+
 # Copiamos manifests necesarios
 COPY package.json pnpm-lock.yaml ./
 COPY apps/api/package.json ./apps/api/
@@ -18,6 +20,10 @@ RUN pnpm install --frozen-lockfile
 
 # Copiamos el resto del código
 COPY . .
+
+# Build db primero
+RUN pnpm --filter @cubiculo/db run build
+RUN pnpm --filter @cubiculo/db run generate
 
 # Build SOLO de la API
 RUN pnpm --filter @cubiculo/api run build
