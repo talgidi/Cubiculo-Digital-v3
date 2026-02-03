@@ -3,25 +3,23 @@
 # -----------------------------
 FROM node:20 AS builder
 
-# Directorio de trabajo
 WORKDIR /app
 
-# Copiar package.json raíz y lockfile
+# Copiamos manifests necesarios
 COPY package.json pnpm-lock.yaml ./
-
-# Copiar package.json de la API (workspace)
 COPY apps/api/package.json ./apps/api/
+COPY packages/db/package.json ./packages/db/
 
-# Activar pnpm
+# Habilitamos pnpm
 RUN corepack enable && corepack prepare pnpm@10.28.1 --activate
 
-# Instalar dependencias de toda la monorepo
+# Instalamos dependencias del monorepo
 RUN pnpm install --frozen-lockfile
 
-# Copiar todo el código fuente
+# Copiamos el resto del código
 COPY . .
 
-# Build API
+# Build SOLO de la API
 RUN pnpm --filter @cubiculo/api run build
 
 # -----------------------------
@@ -31,18 +29,16 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Copiar node_modules y API compilada desde builder
+ENV NODE_ENV=production
+
+# Copiamos solo lo necesario para ejecutar
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
-
-# Copiar package.json de la API (opcional)
 COPY --from=builder /app/apps/api/package.json ./apps/api/package.json
+COPY --from=builder /app/packages/db ./packages/db
+COPY --from=builder /app/package.json ./package.json
 
-# Copiar archivo .env con variables de producción
-COPY --from=builder /app/.env ./
-
-# Exponer puerto de la API
+# Railway inyecta PORT
 EXPOSE 4000
 
-# Comando por defecto
 CMD ["node", "apps/api/dist/index.js"]
