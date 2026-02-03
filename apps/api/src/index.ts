@@ -3,17 +3,17 @@ import { createYoga } from 'graphql-yoga';
 import { schema } from './schema.js';
 
 const PORT = Number(process.env.PORT) || 4000;
-
-// GraphQL solo en dev
 const isDev = process.env.NODE_ENV === 'development';
 
 const yoga = createYoga({
   schema,
   graphqlEndpoint: '/graphql',
-  // Playground habilitado solo en desarrollo
+
+  // Playground SOLO en desarrollo
   graphiql: isDev,
-  // Logging minimal en prod
-  logging: isDev ? { level: 'info' } : false,
+
+  // Logging válido para graphql-yoga v5
+  logging: isDev ? 'info' : false,
 });
 
 const server = createServer(yoga);
