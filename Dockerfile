@@ -22,7 +22,7 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # 🔑 PRISMA PRIMERO
-RUN pnpm --filter @cubiculo/db exec prisma generate
+RUN pnpm prisma generate --schema packages/db/prisma/schema.prisma
 
 # 🔑 LUEGO build db
 RUN pnpm --filter @cubiculo/db run build
