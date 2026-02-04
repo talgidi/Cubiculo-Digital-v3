@@ -21,8 +21,10 @@ RUN pnpm install --frozen-lockfile
 # Copiamos el resto del código
 COPY . .
 
-# Build db primero
-RUN pnpm --filter @cubiculo/db run generate
+# 🔑 PRISMA PRIMERO
+RUN pnpm --filter @cubiculo/db exec prisma generate
+
+# 🔑 LUEGO build db
 RUN pnpm --filter @cubiculo/db run build
 
 # Build SOLO de la API
