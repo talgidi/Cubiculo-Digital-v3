@@ -22,8 +22,8 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # Build db primero
-RUN pnpm --filter @cubiculo/db run build
 RUN pnpm --filter @cubiculo/db run generate
+RUN pnpm --filter @cubiculo/db run build
 
 # Build SOLO de la API
 RUN pnpm --filter @cubiculo/api run build
