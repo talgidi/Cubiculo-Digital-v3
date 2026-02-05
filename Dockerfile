@@ -12,16 +12,15 @@ COPY package.json pnpm-lock.yaml ./
 COPY apps/api/package.json ./apps/api/
 COPY packages/db/package.json ./packages/db/
 
-# Copiamos el resto del código
-COPY . .
-
 # Habilitamos pnpm
 RUN corepack enable && corepack prepare pnpm@10.28.1 --activate
 
 # Instalamos dependencias del monorepo
 RUN pnpm install --frozen-lockfile
 
-# 🔑 PRISMA PRIMERO
+# Copiamos el resto del código
+COPY . .# 🔑 PRISMA PRIMERO
+
 RUN pnpm --filter @cubiculo/db run generate
 
 # 🔑 LUEGO build db
