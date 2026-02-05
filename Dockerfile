@@ -15,12 +15,13 @@ COPY packages/db/package.json ./packages/db/
 # Habilitamos pnpm
 RUN corepack enable && corepack prepare pnpm@10.28.1 --activate
 
+# Copiamos el resto del código
+COPY . .
+
 # Instalamos dependencias del monorepo
 RUN pnpm install --frozen-lockfile
 
-# Copiamos el resto del código
-COPY . .# 🔑 PRISMA PRIMERO
-
+# Generamos los clientes de Prisma
 RUN pnpm --filter @cubiculo/db run generate
 
 # 🔑 LUEGO build db
