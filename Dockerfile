@@ -5,6 +5,8 @@ FROM node:20 AS builder
 
 WORKDIR /app
 
+ENV CI=true
+
 # Copiamos manifests necesarios
 COPY package.json pnpm-lock.yaml ./
 COPY apps/api/package.json ./apps/api/
@@ -13,11 +15,17 @@ COPY packages/db/package.json ./packages/db/
 # Habilitamos pnpm
 RUN corepack enable && corepack prepare pnpm@10.28.1 --activate
 
+# Copiamos el resto del código
+COPY . .
+
 # Instalamos dependencias del monorepo
 RUN pnpm install --frozen-lockfile
 
-# Copiamos el resto del código
-COPY . .
+# Generamos los clientes de Prisma
+RUN pnpm --filter @cubiculo/db run generate
+
+# 🔑 LUEGO build db
+RUN pnpm --filter @cubiculo/db run build
 
 # Build SOLO de la API
 RUN pnpm --filter @cubiculo/api run build

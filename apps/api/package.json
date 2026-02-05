@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "graphql": "^16.8.1",
-    "graphql-yoga": "^5.7.0"
+    "graphql-yoga": "^5.7.0",
+    "@cubiculo/db": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.19.30",
