@@ -12,8 +12,7 @@ const yoga = createYoga({
   logging: isDev ? 'info' : false,
 });
 
-const server = createServer((req, res) => {
-if (req.method === 'GET' && req.url === '/health') {
+async function handleHealth(req: any, res: any) {
   let dbStatus = 'disabled';
 
   if (process.env.HEALTHCHECK_DB === 'true') {
@@ -42,8 +41,13 @@ if (req.method === 'GET' && req.url === '/health') {
       </body>
     </html>
   `);
-  return;
 }
+
+const server = createServer((req, res) => {
+  if (req.method === 'GET' && req.url === '/health') {
+    handleHealth(req, res);
+    return;
+  }
 
   return yoga(req, res);
 });

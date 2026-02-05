@@ -1,6 +1,8 @@
-import type { PrismaClient } from '@prisma/client';
+import type { prisma } from '@cubiculo/db';
 
-export async function checkDatabase(prisma: PrismaClient) {
+type PrismaInstance = typeof prisma;
+
+export async function checkDatabase(prisma: PrismaInstance) {
   try {
     await prisma.$queryRaw`SELECT 1`;
     return { ok: true };
