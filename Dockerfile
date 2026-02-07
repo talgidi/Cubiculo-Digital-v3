@@ -39,6 +39,9 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
+# 🔑 NECESARIO PARA PRISMA
+RUN apk add --no-cache openssl
+
 # Copiamos solo lo necesario para ejecutar
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
