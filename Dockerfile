@@ -29,7 +29,7 @@ RUN pnpm --filter @cubiculo/db run build
 RUN pnpm --filter @cubiculo/api run build
 
 # Limpiar dependencias de desarrollo para ahorrar espacio
-RUN pnpm prune --prod
+# RUN pnpm prune --prod
 
 # -----------------------------
 # Etapa 2: Runtime
