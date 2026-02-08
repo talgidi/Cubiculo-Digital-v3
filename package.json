@@ -14,7 +14,7 @@
     "start": "node apps/api/dist/index.js"
   },
   "dependencies": {
-    "next": "16.1.5",
+    "next": "15.1.5",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "graphql": "^16.8.1",
