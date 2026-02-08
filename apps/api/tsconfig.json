@@ -17,7 +17,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "@cubiculo/db": ["../../packages/db/dist/index.d.ts"]
+      "@cubiculo/db": ["../../packages/db/dist"]
     }
   },
   "include": ["src"]
