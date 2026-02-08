@@ -29,7 +29,7 @@ RUN pnpm --filter @cubiculo/db run build
 RUN pnpm --filter @cubiculo/api run build
 
 # Limpiar dependencias de desarrollo para ahorrar espacio
-# RUN pnpm prune --prod
+RUN pnpm prune --prod
 
 # -----------------------------
 # Etapa 2: Runtime
@@ -52,6 +52,7 @@ COPY --from=builder /app/apps/api/package.json ./apps/api/package.json
 COPY --from=builder /app/packages/db/dist ./packages/db/dist
 COPY --from=builder /app/packages/db/package.json ./packages/db/package.json
 # Muy importante: Prisma necesita el motor generado
+COPY --from=builder /app/node_modules/.prisma /app/node_modules/.prisma
 COPY --from=builder /app/packages/db/node_modules/.prisma ./packages/db/node_modules/.prisma
 
 EXPOSE 4000
