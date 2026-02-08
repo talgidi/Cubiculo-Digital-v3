@@ -12,9 +12,14 @@ const isDev = process.env.NODE_ENV === 'development';
 const yoga = createYoga({
   schema,
   graphqlEndpoint: '/graphql',
-  graphiql: isDev,
-  logging: isDev ? 'info' : false,
+  cors: {
+    // Permite tu dominio de Vercel y localhost para desarrollo
+    origin: ['https://cubiculo-digital-v3-web.vercel.app/', 'http://localhost:3000'],
+    credentials: true,
+    methods: ['POST'] // GraphQL usualmente solo usa POST
+  }
 });
+
 
 async function handleHealth(req: any, res: any) {
   let dbStatus = 'disabled';
