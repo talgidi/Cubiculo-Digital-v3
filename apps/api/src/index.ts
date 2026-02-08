@@ -2,7 +2,6 @@ import { createServer } from 'node:http';
 import { createYoga } from 'graphql-yoga';
 import { schema } from './schema.js';
 
-// 1. Importación estática: Si esto falla, el log de Render te dirá exactamente por qué
 import { prisma } from '@cubiculo/db'; 
 import { checkDatabase } from './health.js';
 
@@ -12,14 +11,34 @@ const isDev = process.env.NODE_ENV === 'development';
 const yoga = createYoga({
   schema,
   graphqlEndpoint: '/graphql',
-  cors: {
-    // Permite tu dominio de Vercel y localhost para desarrollo
-    origin: ['https://cubiculo-digital-v3-web-git-dev-talgidis-projects.vercel.app', 'http://localhost:3000'],
-    credentials: true,
-    methods: ['POST'] // GraphQL usualmente solo usa POST
+  logging: isDev ? 'info' : false,
+  cors: (request) => {
+    const requestOrigin = request.headers.get('origin');
+    
+    // Si no hay origen (como peticiones directas al health), permitimos
+    if (!requestOrigin) return {}; 
+
+    // 1. Verificamos Localhost
+    const isLocalhost = requestOrigin.includes('localhost:3000');
+    
+    // 2. Regex para Vercel: Permite cualquier subdominio que termine en .vercel.app
+    // El /^https:\/\/.*\.vercel\.app$/ es más estricto y seguro
+    const isVercelPreview = /^https:\/\/.*\.vercel\.app$/.test(requestOrigin);
+
+    if (isLocalhost || isVercelPreview) {
+      return {
+        origin: requestOrigin,
+        credentials: true,
+        methods: ['POST', 'GET', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization']
+      };
+    }
+
+    // Fallback: Si tienes un dominio propio en el futuro, ponlo aquí. 
+    // Por ahora, si no coincide con los anteriores, devolvemos un objeto vacío (bloquea CORS)
+    return {};
   }
 });
-
 
 async function handleHealth(req: any, res: any) {
   let dbStatus = 'disabled';
@@ -28,7 +47,7 @@ async function handleHealth(req: any, res: any) {
     try {
       const result = await checkDatabase(prisma);
       dbStatus = result.ok ? 'connected' : `error: ${result.error}`;
-    } catch {
+    } catch (error) {
       dbStatus = 'failed to load db';
     }
   }
