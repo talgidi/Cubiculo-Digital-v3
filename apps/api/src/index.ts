@@ -2,24 +2,30 @@ import { createServer } from 'node:http';
 import { createYoga } from 'graphql-yoga';
 import { schema } from './schema.js';
 
+// 1. Importación estática: Si esto falla, el log de Render te dirá exactamente por qué
+import { prisma } from '@cubiculo/db'; 
+import { checkDatabase } from './health.js';
+
 const PORT = Number(process.env.PORT) || 4000;
 const isDev = process.env.NODE_ENV === 'development';
 
 const yoga = createYoga({
   schema,
   graphqlEndpoint: '/graphql',
-  graphiql: isDev,
-  logging: isDev ? 'info' : false,
+  cors: {
+    // Permite tu dominio de Vercel y localhost para desarrollo
+    origin: ['https://cubiculo-digital-v3-web.vercel.app/', 'http://localhost:3000'],
+    credentials: true,
+    methods: ['POST'] // GraphQL usualmente solo usa POST
+  }
 });
+
 
 async function handleHealth(req: any, res: any) {
   let dbStatus = 'disabled';
 
   if (process.env.HEALTHCHECK_DB === 'true') {
     try {
-      const { prisma } = await import('@cubiculo/db');
-      const { checkDatabase } = await import('./health.js');
-
       const result = await checkDatabase(prisma);
       dbStatus = result.ok ? 'connected' : `error: ${result.error}`;
     } catch {
