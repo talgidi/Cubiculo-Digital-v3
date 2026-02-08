@@ -39,9 +39,12 @@ RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 ENV NODE_ENV=production
 
+# Copiamos el deploy que generamos (contiene la API + node_modules reales)
+COPY --from=builder /app/deploy ./
+
 # Copiamos node_modules completo para mantener los enlaces simbólicos de pnpm
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+# COPY --from=builder /app/node_modules ./node_modules
+# COPY --from=builder /app/package.json ./package.json
 
 # Copiamos compilados de la API
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
@@ -49,6 +52,9 @@ COPY --from=builder /app/apps/api/package.json ./apps/api/package.json
 
 # Copiamos el paquete de la DB completo (importante para que el import funcione)
 COPY --from=builder /app/packages/db ./packages/db
+
+# Copiamos el motor de Prisma generado (crítico para la conexión)
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 EXPOSE 4000
 
