@@ -14,7 +14,7 @@ const yoga = createYoga({
   graphqlEndpoint: '/graphql',
   cors: {
     // Permite tu dominio de Vercel y localhost para desarrollo
-    origin: ['https://cubiculo-digital-v3.onrender.com', 'http://localhost:3000'],
+    origin: ['https://cubiculo-digital-v3-f27fs7zfa-talgidis-projects.vercel.app', 'http://localhost:3000'],
     credentials: true,
     methods: ['POST'] // GraphQL usualmente solo usa POST
   }
