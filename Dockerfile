@@ -1,17 +1,15 @@
 # -----------------------------
 # Etapa 1: Build
 # -----------------------------
-FROM node:20-slim AS builder
-
-# Instalar openssl para Prisma
-RUN apt-get update && apt-get install -y openssl
+FROM node:20 AS builder
 
 WORKDIR /app
+ENV CI=true
 
 # Habilitamos pnpm
 RUN corepack enable && corepack prepare pnpm@10.28.1 --activate
 
-# Copiamos manifiestos
+# Copiamos manifests y workspace
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/api/package.json ./apps/api/
 COPY packages/db/package.json ./packages/db/
@@ -23,37 +21,34 @@ RUN pnpm install --frozen-lockfile
 # Copiamos el resto del código
 COPY . .
 
-# Generar y Build
+# 1. Generar cliente de Prisma
 RUN pnpm --filter @cubiculo/db run generate
+# 2. Build de la DB (genera el /dist que usará la API)
 RUN pnpm --filter @cubiculo/db run build
+# 3. Build de la API
 RUN pnpm --filter @cubiculo/api run build
 
-# Limpiar dependencias de desarrollo para ahorrar espacio
-RUN pnpm prune --prod
+# -----------------------------
+# Etapa 2: Runtime (Basada en tu versión exitosa)
+# -----------------------------
+FROM node:20 AS runner
 
-# -----------------------------
-# Etapa 2: Runtime
-# -----------------------------
-FROM node:20-slim AS runner
+# Instalamos openssl necesario para la conexión SSL de Supabase
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 ENV NODE_ENV=production
 
-# Requerido para Prisma Client
-RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
-
-# Copiamos TODA la estructura de node_modules (incluye links del workspace)
+# Copiamos node_modules completo para mantener los enlaces simbólicos de pnpm
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
-# Copiamos los paquetes compilados
+# Copiamos compilados de la API
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/apps/api/package.json ./apps/api/package.json
-COPY --from=builder /app/packages/db/dist ./packages/db/dist
-COPY --from=builder /app/packages/db/package.json ./packages/db/package.json
-# Muy importante: Prisma necesita el motor generado
-COPY --from=builder /app/node_modules/.prisma /app/node_modules/.prisma
-COPY --from=builder /app/packages/db/node_modules/.prisma ./packages/db/node_modules/.prisma
+
+# Copiamos el paquete de la DB completo (importante para que el import funcione)
+COPY --from=builder /app/packages/db ./packages/db
 
 EXPOSE 4000
 
