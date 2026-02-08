@@ -2,6 +2,10 @@ import { createServer } from 'node:http';
 import { createYoga } from 'graphql-yoga';
 import { schema } from './schema.js';
 
+// 1. Importación estática: Si esto falla, el log de Render te dirá exactamente por qué
+import { prisma } from '@cubiculo/db'; 
+import { checkDatabase } from './health.js';
+
 const PORT = Number(process.env.PORT) || 4000;
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -17,9 +21,6 @@ async function handleHealth(req: any, res: any) {
 
   if (process.env.HEALTHCHECK_DB === 'true') {
     try {
-      const { prisma } = await import('@cubiculo/db');
-      const { checkDatabase } = await import('./health.js');
-
       const result = await checkDatabase(prisma);
       dbStatus = result.ok ? 'connected' : `error: ${result.error}`;
     } catch {
