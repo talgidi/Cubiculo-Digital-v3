@@ -30,7 +30,7 @@ const yoga = createYoga({
   }
 });
 
-async function handleHealth(req, res) {
+async function handleHealth(req: any, res: any) {
   let dbStatus = 'disabled';
   let redisStatus = 'checking...';
 
