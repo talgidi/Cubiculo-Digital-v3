@@ -31,20 +31,27 @@ const yoga = createYoga({
 });
 
 async function handleHealth(req: any, res: any) {
-  let dbStatus = 'disabled';
+  let dbStatus = 'checking...';
   let redisStatus = 'checking...';
 
   if (process.env.HEALTHCHECK_DB === 'true') {
     try {
+      // Validar Postgres
       const dbResult = await checkDatabase(prisma);
       dbStatus = dbResult.ok ? 'connected' : `error: ${dbResult.error}`;
-      
-      // Verificamos Redis
+    } catch (err: any) {
+      dbStatus = `failed: ${err.message}`;
+    }
+
+    try {
+      if (!redis.isOpen) {
+        await redis.connect();
+      }
       const ping = await redis.ping();
-      redisStatus = ping === 'PONG' ? 'connected' : 'error';
-    } catch (error) {
-      dbStatus = 'failed';
-      redisStatus = 'failed';
+      redisStatus = ping === 'PONG' ? 'connected' : 'error: no pong';
+    } catch (err: any) {
+      // AQUÍ: Verás el error real de Redis en tu pantalla de healthcheck
+      redisStatus = `failed: ${err.message || 'unknown error'}`;
     }
   }
 
@@ -55,6 +62,7 @@ async function handleHealth(req: any, res: any) {
         <h2 style="color:#22c55e">✔ API Status</h2>
         <p>Postgres: ${dbStatus}</p>
         <p>Redis Cloud: ${redisStatus}</p>
+        <p style="font-size:0.8rem;color:#64748b">Time: ${new Date().toISOString()}</p>
       </div>
     </body>
   `);
