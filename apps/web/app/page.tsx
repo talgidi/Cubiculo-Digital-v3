@@ -5,7 +5,7 @@ import React from 'react';
 import { useQuery, gql } from '@apollo/client';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
-import FeaturesSection from '@/components/FeaturesSection';
+import FeatureSection from '@/components/FeatureSection';
 import Footer from '@/components/Footer';
 
 // Mantenemos la consulta de salud para verificar si la API está viva
@@ -25,7 +25,7 @@ export default function HomePage() {
       <Header />
       <main>
         <HeroSection />
-        <FeaturesSection />
+        <FeatureSection />
       </main>
       <Footer apiStatus={apiStatus} />
     </div>
