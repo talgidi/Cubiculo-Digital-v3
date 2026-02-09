@@ -4,36 +4,27 @@ const redisUrl = process.env.REDIS_URL;
 
 export const redis = createClient({
   url: redisUrl,
-  // Añadimos una estrategia de reconexión para que no se rinda si falla al inicio
   socket: {
-    reconnectStrategy: (retries) => {
-      if (retries > 10) return new Error('Redis: Max retries reached');
-      return Math.min(retries * 100, 3000);
-    }
+    reconnectStrategy: (retries) => Math.min(retries * 50, 2000),
+    // Esto ayuda si hay problemas de resolución IPv6 en Render
+    family: 4 
   }
 });
 
-// Capturamos el error específico
 redis.on('error', (err) => {
-  console.error('❌ Redis Connection Error Details:', {
-    message: err.message,
-    code: err.code,
-    stack: err.stack
-  });
+  // Ahora capturaremos el mensaje aunque venga vacío en el objeto principal
+  console.error('❌ Redis Error:', err.message || err.code || err);
 });
 
-redis.on('connect', () => console.log('🚀 Redis Client Connected'));
-redis.on('ready', () => console.log('✅ Redis Client Ready'));
-
 export const connectRedis = async () => {
-  try {
-    if (!redis.isOpen && redisUrl) {
+  if (!redis.isOpen && redisUrl) {
+    try {
       await redis.connect();
+      console.log('✅ Redis conectado exitosamente');
+    } catch (err) {
+      console.error('❌ Error al conectar Redis:', err);
     }
-  } catch (err) {
-    console.error('❌ Failed to connect to Redis on startup:', err);
   }
 };
 
-// Ejecutamos la conexión
 connectRedis();
