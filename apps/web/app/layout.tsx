@@ -1,5 +1,5 @@
-import { ApolloWrapper } from './providers/apollo-provider';
-import { ThemeProvider } from './providers/ThemeProvider'; // Importar ThemeProvider
+import { ApolloWrapper } from '@/providers/apollo-provider';
+import { ThemeProvider } from '@/providers/ThemeProvider'; // Importar ThemeProvider
 import './globals.css'; // Asegúrate de que esto esté aquí
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
