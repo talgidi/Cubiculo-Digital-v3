@@ -10,6 +10,7 @@
     "build:api": "pnpm --filter @cubiculo/api build",
     "build:web": "pnpm --filter @cubiculo/web build",
     "build": "pnpm run build:api && pnpm run build:web",
+    "dev": "pnpm --parallel --filter @cubiculo/api --filter @cubiculo/web dev",
 
     "start": "node apps/api/dist/index.js"
   },

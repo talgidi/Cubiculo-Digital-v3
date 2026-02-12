@@ -1,8 +1,10 @@
 import React from 'react';
+import { useRouter } from "next/navigation";
 import { useTheme } from '@/providers/ThemeProvider';
 
 const Header = () => {
   const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
 
   return (
     <header className="absolute top-0 left-0 right-0 z-10 p-4 md:p-6">
@@ -19,7 +21,7 @@ const Header = () => {
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>
 
-          <button className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hidden sm:inline">Iniciar sesión</button>
+          <button onClick={() => router.push("/login")} className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hidden sm:inline">Iniciar sesión</button>
           <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-lg">
             Registrarse
           </button>
