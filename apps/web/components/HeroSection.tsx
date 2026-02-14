@@ -26,8 +26,11 @@ const HeroSection = () => {
         </div>
         <div className="md:w-1/2 flex justify-center">
           {/* Imagen abstracta */}
-          <div className="w-full max-w-md h-80 bg-gray-200 dark:bg-gray-800 rounded-xl shadow-2xl flex items-center justify-center border border-gray-300 dark:border-gray-700">
-            <span className="text-gray-500">Imagen abstracta de red de datos</span>
+          <div className="flex-1 w-full lg:w-1/2">
+            <div className="w-full aspect-[4/3] rounded-2xl bg-center bg-cover shadow-2xl shadow-blue-900/10 border border-[#e5e7eb] dark:border-[#232f48] relative overflow-hidden group"
+              style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuD5Liq6Y8Fi6OKjbH1NXg6jjtDKQ9ypdDso9Gl6w6az0OZeBVZMf_2CAsqbpiYQkFkeVjm7_fgLe4EtxTx7NL3RQ1UkWDkHyuHvzfsNYz2uNEDDy8Jh8nx2T4YP6w9TXek1ZWazASTG2MPOJWEVsTBMqXYi_tzC7ZPa8il7XrBXnJrjSqeQUXa5zpk5vT-TogVckOL3WcX71eUlPz5K0hGOMZSHMpLjaA5-hvnH2RbO7UCF7-GFOtOdLnnBvn5EthND7ZRN458c1eA")' }}>
+              <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent mix-blend-multiply"></div>
+            </div>
           </div>
         </div>
       </div>

@@ -15,6 +15,12 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useState('dark'); // El diseño actual es oscuro
 
   useEffect(() => {
+    // 1. Verificar si hay algo guardado al cargar
+    const saved = localStorage.getItem('theme') || 'dark';
+    setTheme(saved);
+  }, []);
+
+  useEffect(() => {
     // Aplicar la clase 'dark' al <html> al montar
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');

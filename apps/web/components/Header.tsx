@@ -9,7 +9,7 @@ const Header = () => {
   return (
     <header className="absolute top-0 left-0 right-0 z-10 p-4 md:p-6">
       <nav className="flex justify-between items-center max-w-7xl mx-auto">
-        <div className="text-2xl font-bold text-gray-900 dark:text-white">Cubículo Digital</div>
+        <div className="text-2xl font-bold text-current">Cubículo Digital</div>
         <div className="flex items-center space-x-4">
           
           {/* Botón para cambiar tema */}
@@ -22,7 +22,7 @@ const Header = () => {
           </button>
 
           <button onClick={() => router.push("/login")} className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hidden sm:inline">Iniciar sesión</button>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-lg">
+          <button onClick={() => router.push("/signup")} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-lg">
             Registrarse
           </button>
         </div>

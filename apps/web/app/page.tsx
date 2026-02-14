@@ -21,7 +21,7 @@ export default function HomePage() {
   const apiStatus = data?.health === 'ok' ? 'Conectada' : 'Fallida';
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white font-sans">
+    <div className="min-h-screen bg-white dark:bg-[#10121a] text-gray-900 dark:text-white font-sans transition-colors duration-300">
       <Header />
       <main>
         <HeroSection />
