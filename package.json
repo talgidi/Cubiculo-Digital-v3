@@ -7,6 +7,7 @@
   },
   "scripts": {
     "preinstall": "corepack enable",
+    "build:db": "pnpm --filter @cubiculo/db build",
     "build:api": "pnpm --filter @cubiculo/api build",
     "build:web": "pnpm --filter @cubiculo/web build",
     "build": "pnpm run build:api && pnpm run build:web",
