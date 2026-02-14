@@ -1,6 +1,8 @@
 // apps/web/app/login/page.tsx
-import LoginPageView from "@/views/LoginPageView";
+import { LoginView } from "@/views/auth";
 
-export default function Page() {
-  return <LoginPageView />;
+export const metadata = { title: "Login | Mi SaaS" };
+
+export default function LoginPage() {
+  return <LoginView />;
 }

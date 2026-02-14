@@ -8,7 +8,7 @@ const FeatureCard = ({ title, description, icon }) => (
   </div>
 );
 
-const FeatureSection = () => {
+export const FeatureSection = () => {
   return (
     <section className="py-20 bg-gray-900">
       <div className="max-w-7xl mx-auto px-6 md:px-8">
@@ -38,5 +38,3 @@ const FeatureSection = () => {
     </section>
   );
 };
-
-export default FeatureSection;

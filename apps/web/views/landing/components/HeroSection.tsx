@@ -1,7 +1,7 @@
 // apps/web/components/HeroSection.tsx
 import React from 'react';
 
-const HeroSection = () => {
+export const HeroSection = () => {
   return (
     <section className="relative pt-32 pb-16 md:pt-48 md:pb-24 bg-white dark:bg-gray-900 transition duration-300 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center">
@@ -37,5 +37,3 @@ const HeroSection = () => {
     </section>
   );
 };
-
-export default HeroSection;

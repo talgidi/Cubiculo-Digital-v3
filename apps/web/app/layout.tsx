@@ -1,15 +1,12 @@
-import { ApolloWrapper } from '@/providers/apollo-provider';
-import { ThemeProvider } from '@/providers/ThemeProvider'; // Importar ThemeProvider
+import { Providers } from '@/providers';
 import './globals.css'; // Asegúrate de que esto esté aquí
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     // Aseguramos que la app use el fondo correcto por defecto y en modo oscuro
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <body>
-        <ThemeProvider>
-          <ApolloWrapper>{children}</ApolloWrapper>
-        </ThemeProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

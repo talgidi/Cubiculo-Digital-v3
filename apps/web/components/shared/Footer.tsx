@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Footer = ({ apiStatus }) => {
+export const Footer = ({ apiStatus }) => {
   return (
     <footer className="bg-gray-900 border-t border-gray-800">
       <div className="max-w-7xl mx-auto py-8 px-6 md:px-8 flex justify-between items-center">
@@ -19,5 +19,3 @@ const Footer = ({ apiStatus }) => {
     </footer>
   );
 };
-
-export default Footer;
