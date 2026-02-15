@@ -1,10 +1,23 @@
 "use client";
+
+import { useQuery } from "@apollo/client";
+import { GET_DASHBOARD_STATS } from "@/modules/dashboard/dashboard.api";
 import { Activity, Plus, DollarSign, Box } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from "@/components/ui";
 import { Footer } from "@/components/shared"; // Importación limpia desde el barril
 import { StatCard } from "./components/StatusCard";
 import { DeptCard } from "./components/DeparmentCard";
+
+const { data, loading, error } = useQuery(GET_DASHBOARD_STATS, {
+  // ESTRATEGIA CACHE-ASIDE:
+  // 1. Muestra lo que hay en caché inmediatamente (instantáneo).
+  // 2. Hace la petición en background para actualizar si algo cambió.
+  fetchPolicy: "cache-and-network", 
+  
+  // Si el usuario vuelve a entrar en menos de 5 min, ni siquiera hace la petición
+  nextFetchPolicy: "cache-first", 
+});
 
 export const DashboardView = () => {
   return (
