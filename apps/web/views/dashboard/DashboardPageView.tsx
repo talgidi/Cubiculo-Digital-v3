@@ -9,7 +9,8 @@ import { Footer } from "@/components/shared"; // Importación limpia desde el ba
 import { StatCard } from "./components/StatusCard";
 import { DeptCard } from "./components/DeparmentCard";
 
-const { data, loading, error } = useQuery(GET_DASHBOARD_STATS, {
+export const DashboardView = () => {
+  const { data, loading, error } = useQuery(GET_DASHBOARD_STATS, {
   // ESTRATEGIA CACHE-ASIDE:
   // 1. Muestra lo que hay en caché inmediatamente (instantáneo).
   // 2. Hace la petición en background para actualizar si algo cambió.
@@ -17,9 +18,8 @@ const { data, loading, error } = useQuery(GET_DASHBOARD_STATS, {
   
   // Si el usuario vuelve a entrar en menos de 5 min, ni siquiera hace la petición
   nextFetchPolicy: "cache-first", 
-});
+  });
 
-export const DashboardView = () => {
   return (
     <div className="flex flex-col w-full bg-[#f3f4f6] dark:bg-[#101622] min-h-screen dark:text-white">
       <main className="flex-1 pt-24 pb-12 px-6 md:px-10">

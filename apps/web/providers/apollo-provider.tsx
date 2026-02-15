@@ -9,7 +9,7 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { createPersistedQueryLink } from "@apollo/client/link/persisted-queries";
-import { sha256 } from "crypto-js/sha256";
+import sha256 from "crypto-js/sha256";
 
 /**
  * 1. CONFIGURACIÓN DEL CACHÉ (InMemoryCache)
