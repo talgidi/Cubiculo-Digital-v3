@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { createYoga } from 'graphql-yoga';
+import { useAPQ } from '@graphql-yoga/plugin-apq';
 import { schema } from './schema.js';
 import { prisma } from '@cubiculo/db'; 
 import { checkDatabase } from './health.js';
@@ -10,6 +11,20 @@ const PORT = Number(process.env.PORT) || 4000;
 
 const yoga = createYoga({
   schema,
+  plugins: [
+    useAPQ({
+      // CONFIGURACIÓN PRO: Guardar los Hashes directamente en Redis
+      store: {
+        async get(key) {
+          return await redis.get(`apq:${key}`);
+        },
+        async set(key, value) {
+          // Guardamos la query en Redis por 24 horas (86400 seg)
+          await redis.set(`apq:${key}`, value, { EX: 86400 });
+        },
+      }
+    })
+  ],
   graphqlEndpoint: '/graphql',
   cors: (request) => {
     const requestOrigin = request.headers.get('origin');

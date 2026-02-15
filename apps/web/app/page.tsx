@@ -1,33 +1,11 @@
-'use client';
-
-// Usaremos un componente de cliente para la interacción inicial (botones)
 import React from 'react';
-import { useQuery, gql } from '@apollo/client';
-import Header from '@/components/Header';
-import HeroSection from '@/components/HeroSection';
-import FeatureSection from '@/components/FeatureSection';
-import Footer from '@/components/Footer';
+import { LandingView } from '@/views/landing';
 
-// Mantenemos la consulta de salud para verificar si la API está viva
-const HEALTH_QUERY = gql`
-  query GetHealth {
-    health
-  }
-`;
+export const metadata = {
+  title: "Cubículo Digital | Estructura tu conocimiento",
+  description: "Genera tu Biblia Corporativa con IA"
+};
 
 export default function HomePage() {
-  // Puedes usar este hook para mostrar un indicador en el footer si lo deseas
-  const { data } = useQuery(HEALTH_QUERY);
-  const apiStatus = data?.health === 'ok' ? 'Conectada' : 'Fallida';
-
-  return (
-    <div className="min-h-screen bg-gray-900 text-white font-sans">
-      <Header />
-      <main>
-        <HeroSection />
-        <FeatureSection />
-      </main>
-      <Footer apiStatus={apiStatus} />
-    </div>
-  );
+  return <LandingView />;
 }
