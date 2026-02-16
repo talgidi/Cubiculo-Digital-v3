@@ -14,7 +14,7 @@ export const DashboardHeader = () => {
         <Button variant="ghost" size="sm" onClick={toggleTheme} className="rounded-full w-9 h-9 p-0">
           {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
         </Button>
-        <div className="h-8 w-[1px] bg-gray-200 dark:bg-gray-700" />
+        <div className="h-8 w-px bg-gray-200 dark:bg-gray-700" />
         <Button variant="ghost" size="sm" className="gap-2">
           <div className="size-7 rounded-full bg-blue-500 flex items-center justify-center text-white">
             <User className="size-4" />

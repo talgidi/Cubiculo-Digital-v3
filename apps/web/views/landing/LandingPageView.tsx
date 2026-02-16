@@ -13,7 +13,7 @@ export const LandingView = () => {
   const apiStatus = data?.health === 'ok' ? 'Conectada' : 'Fallida';
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#10121a] text-gray-900 dark:text-white transition-colors duration-300">
+    <div className="min-h-screen bg-transparent text-gray-900 dark:text-white transition-colors duration-300">
       <Header />
       <main>
         <HeroSection />
