@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useContext, createContext } from 'react';
+import React, { useState, useEffect, useContext, createContext, useCallback } from 'react';
 
 type ThemeContextType = {
   theme: string;
@@ -9,29 +9,41 @@ type ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const useTheme = () => useContext(ThemeContext)!;
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) throw new Error("useTheme debe usarse dentro de ThemeProvider");
+  return context;
+};
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState('dark'); // El diseño actual es oscuro
+  // Inicializamos con un valor nulo para evitar discrepancias de servidor/cliente
+  const [theme, setTheme] = useState<string>('dark');
 
+  // 1. Cargar el tema inicial lo antes posible
   useEffect(() => {
-    // 1. Verificar si hay algo guardado al cargar
-    const saved = localStorage.getItem('theme') || 'dark';
-    setTheme(saved);
+    const saved = localStorage.getItem('theme');
+    if (saved) {
+      setTheme(saved);
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setTheme('dark');
+    }
   }, []);
 
+  // 2. Aplicar cambios al DOM y al Storage simultáneamente
   useEffect(() => {
-    // Aplicar la clase 'dark' al <html> al montar
+    const root = window.document.documentElement;
     if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
+      root.classList.add('dark');
     } else {
-      document.documentElement.classList.remove('dark');
+      root.classList.remove('dark');
     }
+    // ESTO FALTABA: Guardar la elección para la próxima navegación
+    localStorage.setItem('theme', theme);
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === 'dark' ? 'light' : 'dark'));
-  };
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  }, []);
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>

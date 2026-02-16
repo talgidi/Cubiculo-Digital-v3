@@ -21,7 +21,7 @@ export const DashboardView = () => {
   });
 
   return (
-    <div className="flex flex-col w-full bg-[#f3f4f6] dark:bg-[#101622] min-h-screen dark:text-white">
+    <div className="flex flex-col w-full bg-transparent min-h-screen dark:text-white">
       <main className="flex-1 pt-24 pb-12 px-6 md:px-10">
         <div className="mx-auto max-w-[1200px]">
           {/* Header */}
