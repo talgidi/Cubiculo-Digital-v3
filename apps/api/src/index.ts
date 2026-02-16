@@ -1,25 +1,35 @@
+import 'dotenv/config';
 import { createServer } from 'node:http';
 import { createYoga } from 'graphql-yoga';
 import { useAPQ } from '@graphql-yoga/plugin-apq';
-import { schema } from './schema.js';
+import { schema } from './graphql/index.js';
+import { createContext } from './graphql/context.js';
 import { prisma } from '@cubiculo/db'; 
 import { checkDatabase } from './health.js';
-// Importamos redis
 import { redis } from './redis.js';
 
 const PORT = Number(process.env.PORT) || 4000;
 
 const yoga = createYoga({
   schema,
+  context: createContext,
   plugins: [
     useAPQ({
-      // CONFIGURACIÓN PRO: Guardar los Hashes directamente en Redis
       store: {
         async get(key) {
+          // ✅ VERIFICACIÓN CRÍTICA: Si el cliente está cerrado, saltamos el caché
+          if (!redis.isOpen) {
+            console.warn('⚠️ Redis cerrado. Saltando caché APQ (GET).');
+            return null;
+          }
           return await redis.get(`apq:${key}`);
         },
         async set(key, value) {
-          // Guardamos la query en Redis por 24 horas (86400 seg)
+          // ✅ VERIFICACIÓN CRÍTICA: Evita intentar escribir si no hay conexión
+          if (!redis.isOpen) {
+            console.warn('⚠️ Redis cerrado. Saltando caché APQ (SET).');
+            return;
+          }
           await redis.set(`apq:${key}`, value, { EX: 86400 });
         },
       }

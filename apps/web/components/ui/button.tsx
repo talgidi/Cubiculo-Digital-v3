@@ -29,7 +29,7 @@ export const Button = ({
   return (
     <button
       className={cn(
-        'rounded-lg transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:pointer-events-none',
+        'inline-flex items-center justify-center rounded-lg transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:pointer-events-none',
         variants[variant],
         sizes[size],
         className

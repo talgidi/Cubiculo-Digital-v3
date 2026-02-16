@@ -2,8 +2,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, FileText, Users, Settings } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuthActions } from '@/modules/auth/auth.hooks';
 
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -14,6 +15,7 @@ const navItems = [
 
 export const Sidebar = () => {
   const pathname = usePathname();
+  const { logout } = useAuthActions();
 
   return (
     <aside className="hidden md:flex w-64 flex-col fixed inset-y-0 bg-white dark:bg-[#192233] border-r border-[#e5e7eb] dark:border-[#324467]">
@@ -37,6 +39,16 @@ export const Sidebar = () => {
           </Link>
         ))}
       </nav>
+      {/* SECCIÓN INFERIOR: Botón de Cerrar Sesión */}
+      <div className="p-4 border-t border-[#e5e7eb] dark:border-[#324467]">
+        <button 
+          onClick={logout}
+          className="flex w-full items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+        >
+          <LogOut className="size-5" />
+          Cerrar sesión
+        </button>
+      </div>
     </aside>
   );
 };

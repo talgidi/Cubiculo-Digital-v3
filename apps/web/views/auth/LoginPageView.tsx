@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAuthActions } from "@/modules/auth/auth.hooks";
 import { Button, Input } from "@/components/ui";
+import { AuthCloseButton } from "@/components/shared/AuthCloseButton";
 
 export const LoginView = () => {
     const [email, setEmail] = useState("");
@@ -11,7 +12,8 @@ export const LoginView = () => {
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-[#0b1220]">
-            <div className="w-full max-w-md rounded-lg bg-white dark:bg-[#101622] p-8 shadow-md">
+            <div className="relative w-full max-w-md rounded-lg bg-white dark:bg-[#101622] p-8 shadow-md">
+                <AuthCloseButton />
                 <h1 className="mb-6 text-center text-2xl font-bold text-gray-900 dark:text-white">Login</h1>
                 <form onSubmit={(e) => { e.preventDefault(); login({ email, password }); }} className="space-y-4">
                     <Input
