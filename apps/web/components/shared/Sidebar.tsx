@@ -8,7 +8,7 @@ import { useAuthActions } from '@/modules/auth/auth.hooks';
 
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Entrevistas', href: '/interview', icon: FileText },
+  { name: 'Entrevistas', href: '/dashboard/interview', icon: FileText },
   { name: 'Equipo', href: '/team', icon: Users },
   { name: 'Ajustes', href: '/settings', icon: Settings },
 ];
