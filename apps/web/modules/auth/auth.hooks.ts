@@ -1,7 +1,7 @@
 import { useMutation, useApolloClient } from "@apollo/client";
 import { useRouter } from "next/navigation";
 import Cookies from 'js-cookie';
-import { LOGIN_MUTATION, SIGNUP_MUTATION } from "./auth.api";
+import { GOOGLE_MUTATION, LOGIN_MUTATION, SIGNUP_MUTATION } from "./auth.api";
 
 export const useAuthActions = () => {
   const router = useRouter();
@@ -9,6 +9,20 @@ export const useAuthActions = () => {
 
   const [loginMutation, { loading: loginLoading, error: loginError }] = useMutation(LOGIN_MUTATION);
   const [signupMutation, { loading: signupLoading, error: signupError }] = useMutation(SIGNUP_MUTATION);
+  const [googleAuth, { loading: googleLoading, error: googleError }] = useMutation(GOOGLE_MUTATION);
+
+  const loginWithGoogle = async (googleToken: string) => {
+    try {
+      const { data } = await googleAuth({ 
+        variables: { token: googleToken, provider: 'google' } 
+      });
+      if (data?.authSocial?.token) {
+        handleAuthSuccess(data.authSocial.token); // Reutiliza la lógica de cookies/localStorage
+      }
+    } catch (err) {
+      console.error("Error en login social:", err);
+    }
+  };
 
   const handleAuthSuccess = (token: string) => {
     // 1. Guardar en localStorage para el Apollo Client (authLink)
@@ -48,8 +62,9 @@ export const useAuthActions = () => {
       const { data } = await signupMutation({ variables });
       if (data?.signup?.token) handleAuthSuccess(data.signup.token);
     },
+    loginWithGoogle, // ✅ AHORA SÍ SE EXPORTA
     logout,
-    loading: loginLoading || signupLoading,
-    error: loginError || signupError,
+    loading: loginLoading || signupLoading || googleLoading,
+    error: loginError || signupError || googleError,
   };
 };

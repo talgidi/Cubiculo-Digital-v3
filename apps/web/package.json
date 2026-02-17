@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.12.0",
+    "@react-oauth/google": "^0.13.4",
     "clsx": "^2.1.1",
     "crypto-js": "^4.2.0",
     "graphql": "^16.8.1",

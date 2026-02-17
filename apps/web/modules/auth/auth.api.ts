@@ -17,3 +17,16 @@ export const SIGNUP_MUTATION = gql`
     }
   }
 `;
+
+export const GOOGLE_MUTATION = gql`
+  mutation GoogleAuth($token: String!, $provider: String!) {
+    authSocial(token: $token, provider: $provider) {
+      token
+      user {
+        id
+        email
+        name
+      }
+    }
+  }
+`;
