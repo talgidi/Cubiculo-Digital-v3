@@ -1,13 +1,58 @@
-import { useMutation } from "@apollo/client";
-import { SUBMIT_ANSWER } from "./interview.api";
+import { useMutation, useQuery } from "@apollo/client";
+import { useState, useEffect } from "react";
+import { SUBMIT_ANSWER, GET_RANDOM_INTERVIEW } from "./interview.api";
 
-export const useInterviewActions = () => {
-  const [submitAnswer, { loading }] = useMutation(SUBMIT_ANSWER);
+export const useInterviewFlow = () => {
+  // A. Obtener datos del servidor
+  const { data, loading: queryLoading } = useQuery(GET_RANDOM_INTERVIEW); 
+  // B. Estado del paso actual
+  const [currentStep, setCurrentStep] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return Number(localStorage.getItem('interview_step') || 0);
+    }
+    return 0;
+  });
+  // C. Mutación para guardar en DB
+  const [submitAnswer, { loading: mutationLoading }] = useMutation(SUBMIT_ANSWER);
 
-  const handleSave = async (content: string, questionId: string) => {
-    // Aquí implementaremos la lógica para guardar
-    console.log("Guardando:", content);
+  // Persistir el paso actual
+  useEffect(() => {
+    localStorage.setItem('interview_step', currentStep.toString());
+  }, [currentStep]);
+
+
+  // Acción: Guardar progreso en LocalStorage (Caché de resiliencia)
+  const saveLocalProgress = (questionId: string, content: string) => {
+    localStorage.setItem(`interview_q_${questionId}`, content);
+  };
+  // Acción: Obtener progreso guardado
+  const getLocalProgress = (questionId: string) => {
+    return localStorage.getItem(`interview_q_${questionId}`) || "";
   };
 
-  return { handleSave, loading };
+    // Acción: Guardar en DB y avanzar
+  const handleNext = async (questionId: string, content: string) => {
+    try {
+      // 1. Guardar en Servidor
+      const response = await submitAnswer({ variables: { content, questionId } });
+      
+      // ✅ Si la respuesta del servidor es exitosa, avanzamos
+      if (response.data?.submitAnswer?.success) {
+        setCurrentStep(prev => prev + 1);
+      }
+    } catch (error) {
+      // Si falla, el error saldrá en consola pero no avanzará la pregunta (correcto)
+      console.error("Fallo al guardar en DB:", error);
+      alert("Error al guardar: Asegúrate de estar logueado correctamente.");
+    }
+  };
+
+  return {
+    questions: data?.randomInterview?.questions || [],
+    currentStep,
+    loading: queryLoading || mutationLoading,
+    handleNext,
+    saveLocalProgress,
+    getLocalProgress
+  };
 };

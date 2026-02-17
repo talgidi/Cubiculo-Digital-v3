@@ -1,27 +1,27 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronRight, Save } from 'lucide-react';
 import { Button } from '@/components/ui';
-import { useInterviewActions } from '@/modules/interview/interview.hooks';
+import { useInterviewFlow } from '@/modules/interview/interview.hooks';
 import { ProgressHeader } from './components/ProgressHeader';
 import { QuestionCard } from './components/QuestionCard';
 import { EditorArea } from './components/EditorArea';
 
 export const InterviewView = () => {
+  const { questions, currentStep, handleNext, saveLocalProgress, getLocalProgress, loading } = useInterviewFlow();
   const [answer, setAnswer] = useState("");
-  const { handleSave, loading } = useInterviewActions();
 
-  // Mock de datos (En el futuro vendrán de tu useQuery)
-  const currentQuestion = {
-    id: "q3",
-    title: "¿Cuál es el proceso estándar para el onboarding de un nuevo cliente?",
-    description: "Detalla los pasos críticos desde la firma del contrato hasta la primera reunión estratégica. Menciona si hay herramientas específicas involucradas.",
-    department: "Ventas",
-    topic: "Onboarding",
-    step: 3,
-    totalSteps: 10
-  };
+  const currentQuestion = questions[currentStep];
+
+  // Efecto: Cargar progreso desde localStorage al cambiar de pregunta
+  useEffect(() => {
+    if (currentQuestion) {
+      setAnswer(getLocalProgress(currentQuestion.id));
+    }
+  }, [currentStep, currentQuestion]);
+
+  if (loading && questions.length === 0) return <div>Cargando entrevista...</div>;
 
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-500">
@@ -40,36 +40,37 @@ export const InterviewView = () => {
 
       {/* Área de Contenido con Scroll */}
       <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-transparent">
-        <div className="mx-auto max-w-4xl px-6 py-10 pb-32">
+        <div className="mx-auto max-w-4xl px-6 py-10 pb-32">          
+          <ProgressHeader current={currentStep + 1} total={questions.length} />
           
-          <ProgressHeader 
-            current={currentQuestion.step} 
-            total={currentQuestion.totalSteps} 
-          />
+          {currentQuestion && (
+            <>
+              <QuestionCard 
+                title={currentQuestion.title}
+                description={currentQuestion.description}
+                department={currentQuestion.department}
+                topic={currentQuestion.topic}
+              />
 
-          <QuestionCard 
-            title={currentQuestion.title}
-            description={currentQuestion.description}
-            department={currentQuestion.department}
-            topic={currentQuestion.topic}
-          />
+              <EditorArea 
+                value={answer} 
+                onChange={(val) => {
+                  setAnswer(val);
+                  saveLocalProgress(currentQuestion.id, val); // Persistencia en cache
+                }} 
+              />
 
-          <EditorArea 
-            value={answer}
-            onChange={setAnswer}
-            placeholder="Comienza a redactar el proceso aquí..."
-          />
-
-          <div className="mt-10 flex justify-end">
-            <Button 
-              size="lg" 
-              className="min-w-50 shadow-lg shadow-blue-600/20"
-              onClick={() => handleSave(answer, currentQuestion.id)}
-              disabled={loading || !answer}
-            >
-              {loading ? "Guardando..." : "Siguiente Pregunta →"}
-            </Button>
-          </div>
+              <div className="mt-10 flex justify-end">
+                <Button 
+                  size="lg"
+                  onClick={() => handleNext(currentQuestion.id, answer)}
+                  disabled={loading || !answer}
+                >
+                  {currentStep === questions.length - 1 ? "Finalizar" : "Siguiente Pregunta"}
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
