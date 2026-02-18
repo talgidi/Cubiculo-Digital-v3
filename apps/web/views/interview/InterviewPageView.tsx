@@ -9,9 +9,8 @@ import { QuestionCard } from './components/QuestionCard';
 import { EditorArea } from './components/EditorArea';
 
 export const InterviewView = () => {
-  const { questions, currentStep, handleNext, saveLocalProgress, getLocalProgress, loading } = useInterviewFlow();
+  const { questions, currentStep, handleNext, handleBack, saveLocalProgress, getLocalProgress, loading } = useInterviewFlow();
   const [answer, setAnswer] = useState("");
-
   const currentQuestion = questions[currentStep];
 
   // Efecto: Cargar progreso desde localStorage al cambiar de pregunta
@@ -60,7 +59,15 @@ export const InterviewView = () => {
                 }} 
               />
 
-              <div className="mt-10 flex justify-end">
+              <div className="mt-10 flex justify-between">
+                <Button 
+                    variant="outline" 
+                    onClick={handleBack}
+                    disabled={currentStep === 0}
+                    className="dark:border-[#232f48] dark:text-white"
+                  >
+                    Pregunta Anterior
+                </Button>
                 <Button 
                   size="lg"
                   onClick={() => handleNext(currentQuestion.id, answer)}

@@ -4,7 +4,10 @@ import { SUBMIT_ANSWER, GET_RANDOM_INTERVIEW } from "./interview.api";
 
 export const useInterviewFlow = () => {
   // A. Obtener datos del servidor
-  const { data, loading: queryLoading } = useQuery(GET_RANDOM_INTERVIEW); 
+  const { data, loading: queryLoading } = useQuery(GET_RANDOM_INTERVIEW, {
+    // IMPORTANTE: Mantenemos la misma data durante la sesión
+    fetchPolicy: 'cache-first'
+  }); 
   // B. Estado del paso actual
   const [currentStep, setCurrentStep] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -27,6 +30,7 @@ export const useInterviewFlow = () => {
   };
   // Acción: Obtener progreso guardado
   const getLocalProgress = (questionId: string) => {
+    if (typeof window === 'undefined') return "";
     return localStorage.getItem(`interview_q_${questionId}`) || "";
   };
 
@@ -47,12 +51,19 @@ export const useInterviewFlow = () => {
     }
   };
 
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(prev => prev - 1);
+    }
+  };
+
   return {
     questions: data?.randomInterview?.questions || [],
     currentStep,
     loading: queryLoading || mutationLoading,
     handleNext,
-    saveLocalProgress,
+    handleBack,
+    saveLocalProgress: (id: string, val: string) => localStorage.setItem(`interview_q_${id}`, val),
     getLocalProgress
   };
 };
