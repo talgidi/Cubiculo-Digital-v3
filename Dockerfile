@@ -44,5 +44,5 @@ COPY --from=builder /app ./
 
 EXPOSE 4000
 
-# Ejecutamos la API directamente desde su ruta de build
-CMD ["node", "apps/api/dist/index.js"]
+# Aplicamos migraciones pendientes y luego levantamos la API
+CMD ["sh", "-c", "pnpm --filter @cubiculo/db run migrate:deploy && node apps/api/dist/index.js"]

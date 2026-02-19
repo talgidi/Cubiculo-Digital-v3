@@ -46,8 +46,8 @@ export const useInterviewFlow = () => {
       }
     } catch (error) {
       // Si falla, el error saldrá en consola pero no avanzará la pregunta (correcto)
-      console.error("Fallo al guardar en DB:", error);
-      alert("Error al guardar: Asegúrate de estar logueado correctamente.");
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      alert(`Error al guardar en servidor: ${message}`);
     }
   };
 
