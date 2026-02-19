@@ -3,6 +3,7 @@ import { prisma } from '@cubiculo/db';
 import { authResolvers } from './modules/auth/auth.resolvers.js';
 // 1. IMPORTA TU INTERFAZ PERSONALIZADA
 import { GraphQLContext } from './context.js'; 
+import { interviewResolvers } from './modules/interview/interview.resolvers.js';
 
 export const schema = createSchema({
   typeDefs: /* GraphQL */ `
@@ -17,15 +18,36 @@ export const schema = createSchema({
       user: User!
     }
 
+    type InterviewQuestion {
+      id: ID!
+      title: String!
+      description: String!
+      department: String!
+      topic: String!
+    }
+
+    type InterviewSession {
+      id: ID!
+      questions: [InterviewQuestion!]!
+    }
+
+    type MutationResponse {
+      id: ID!
+      success: Boolean!
+    }
+
     type Query {
       health: String!
       me: User
       users: [User!]!
+      randomInterview: InterviewSession!
     }
 
     type Mutation {
       signup(name: String!, email: String!, password: String!): AuthPayload!
       login(email: String!, password: String!): AuthPayload!
+      submitAnswer(content: String!, questionId: String!): MutationResponse!
+      finishInterview(lastAnswerContent: String!, questionId: String!): MutationResponse!
     }
   `,
   resolvers: [
@@ -39,6 +61,7 @@ export const schema = createSchema({
         users: async () => await prisma.user.findMany(),
       }
     },
-    authResolvers
+    authResolvers,
+    interviewResolvers
   ]
 });
