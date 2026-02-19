@@ -7,7 +7,9 @@ export function middleware(request: NextRequest) {
   // Si intenta ir al dashboard sin token
   if (request.nextUrl.pathname.startsWith('/dashboard')) {
     if (!token) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      // Si no hay token, redirige al login con el origen para volver después
+      const loginUrl = new URL('/login', request.url);
+      return NextResponse.redirect(loginUrl);
     }
   }
 
