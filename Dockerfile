@@ -22,6 +22,7 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # 1. Generar cliente de Prisma (Esto lo crea dentro de node_modules/.pnpm/...)
+RUN pnpm --filter @cubiculo/db run migrate:deploy
 RUN pnpm --filter @cubiculo/db run generate
 # 2. Build de la DB y API
 RUN pnpm --filter @cubiculo/db run build
@@ -45,4 +46,4 @@ COPY --from=builder /app ./
 EXPOSE 4000
 
 # Aplicamos migraciones pendientes y luego levantamos la API
-CMD ["sh", "-c", "pnpm --filter @cubiculo/db run migrate:deploy && node apps/api/dist/index.js"]
+CMD ["node", "apps/api/dist/index.js"]
