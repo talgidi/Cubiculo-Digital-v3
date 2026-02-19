@@ -26,7 +26,22 @@ export const InterviewView = () => {
     }
   }, [currentStep, currentQuestion]);
 
-  if (loading && questions.length === 0) return <div>Cargando entrevista...</div>;
+  // 1. Manejo de Carga
+  if (loading) return (
+    <div className="flex h-screen items-center justify-center dark:bg-[#0b101a]">
+      <p className="text-white animate-pulse">Cargando sesión de entrevista...</p>
+    </div>
+  );
+
+  // 2. Manejo de error o falta de datos (Si no hay preguntas, vuelve al dashboard con seguridad)
+  if (!loading && questions.length === 0) {
+    return (
+      <div className="flex flex-col h-screen items-center justify-center">
+        <p className="text-red-500 mb-4">No se encontraron preguntas disponibles.</p>
+        <Button onClick={() => window.location.href = '/dashboard'}>Volver al Dashboard</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-500">
@@ -102,7 +117,3 @@ export const InterviewView = () => {
     </div>
   );
 };
-
-
-
-
