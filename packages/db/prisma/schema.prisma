@@ -13,7 +13,10 @@ model User {
   email     String   @unique
   password  String
   name      String?
-  interviewResponses InterviewResponse[] 
+  // Relaciones existentes
+  interviewResponses InterviewResponse[]
+  // ✅ AÑADIR ESTA LÍNEA: Relación 1 a 1 con Feedback
+  feedback           Feedback? 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -33,4 +36,12 @@ model InterviewResponse {
   content     String   @db.Text
   isCompleted Boolean  @default(false)
   user        User     @relation(fields: [userId], references: [id])
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  content   String   @db.Text
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
