@@ -22,8 +22,8 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # 1. Generar cliente de Prisma (Esto lo crea dentro de node_modules/.pnpm/...)
-RUN pnpm --filter @cubiculo/db run migrate:deploy
 RUN pnpm --filter @cubiculo/db run generate
+RUN pnpm --filter @cubiculo/db run migrate:deploy
 # 2. Build de la DB y API
 RUN pnpm --filter @cubiculo/db run build
 RUN pnpm --filter @cubiculo/api run build
