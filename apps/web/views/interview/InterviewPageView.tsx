@@ -9,9 +9,15 @@ import { QuestionCard } from './components/QuestionCard';
 import { EditorArea } from './components/EditorArea';
 
 export const InterviewView = () => {
-  const { questions, currentStep, handleNext, handleBack, saveLocalProgress, getLocalProgress, loading } = useInterviewFlow();
+  const {
+    questions, currentStep, handleNext, handleBack,
+    handleFinish, handleSaveAndExit,
+    saveLocalProgress, getLocalProgress, loading, isFinishing
+  } = useInterviewFlow();
+
   const [answer, setAnswer] = useState("");
   const currentQuestion = questions[currentStep];
+  const isLastStep = currentStep === questions.length - 1;
 
   // Efecto: Cargar progreso desde localStorage al cambiar de pregunta
   useEffect(() => {
@@ -31,7 +37,12 @@ export const InterviewView = () => {
           <ChevronRight className="size-4" />
           <span className="text-gray-900 dark:text-white font-medium">Sesión Activa</span>
         </div>
-        <Button variant="outline" size="sm" className="gap-2 dark:border-[#232f48] dark:text-white">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleSaveAndExit} // 👈 Acción real
+          className="gap-2 dark:border-[#232f48] dark:text-white"
+        >
           <Save className="size-4" />
           <span className="hidden sm:inline">Guardar y Salir</span>
         </Button>
@@ -68,12 +79,20 @@ export const InterviewView = () => {
                   >
                     Pregunta Anterior
                 </Button>
+                {/* BOTÓN DINÁMICO: Siguiente o Finalizar */}
                 <Button 
                   size="lg"
-                  onClick={() => handleNext(currentQuestion.id, answer)}
-                  disabled={loading || !answer}
+                  onClick={() => {
+                    if (isLastStep) {
+                      handleFinish(currentQuestion.id, answer);
+                    } else {
+                      handleNext(currentQuestion.id, answer);
+                    }
+                  }}
+                  disabled={loading || isFinishing || !answer}
+                  className={isLastStep ? "bg-green-600 hover:bg-green-700 shadow-green-500/20" : ""}
                 >
-                  {currentStep === questions.length - 1 ? "Finalizar" : "Siguiente Pregunta"}
+                  {isFinishing ? "Procesando..." : isLastStep ? "Finalizar Entrevista" : "Siguiente Pregunta"}
                 </Button>
               </div>
             </>
@@ -83,3 +102,7 @@ export const InterviewView = () => {
     </div>
   );
 };
+
+
+
+

@@ -25,3 +25,12 @@ export const SUBMIT_ANSWER = gql`
     }
   }
 `;
+
+export const FINISH_INTERVIEW = gql`
+  mutation FinishInterview($lastAnswerContent: String!, $questionId: String!) {
+    finishInterview(lastAnswerContent: $lastAnswerContent, questionId: $questionId) {
+      id
+      success
+    }
+  }
+`;

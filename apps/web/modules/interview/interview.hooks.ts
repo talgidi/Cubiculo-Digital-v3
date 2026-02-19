@@ -1,8 +1,11 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useState, useEffect } from "react";
-import { SUBMIT_ANSWER, GET_RANDOM_INTERVIEW } from "./interview.api";
+import { useRouter } from "next/navigation";
+import { SUBMIT_ANSWER, GET_RANDOM_INTERVIEW, FINISH_INTERVIEW } from "./interview.api";
 
 export const useInterviewFlow = () => {
+  const router = useRouter();
+  const [finishInterview, { loading: finishing }] = useMutation(FINISH_INTERVIEW);
   // A. Obtener datos del servidor
   const { data, loading: queryLoading } = useQuery(GET_RANDOM_INTERVIEW, {
     // IMPORTANTE: Mantenemos la misma data durante la sesión
@@ -57,6 +60,25 @@ export const useInterviewFlow = () => {
     }
   };
 
+  const handleFinish = async (questionId: string, content: string) => {
+    try {
+      const response = await finishInterview({ variables: { lastAnswerContent: content, questionId } });
+      if (response.data?.finishInterview?.success) {
+        // Limpiamos el rastro local para una nueva sesión futura
+        localStorage.removeItem('interview_step');
+        // Redirigimos a una página de "Procesando" o al Dashboard con un aviso
+        router.push("/dashboard?status=processing");
+      }
+    } catch (error) {
+      console.error("Error al finalizar:", error);
+    }
+  };
+
+  const handleSaveAndExit = () => {
+    // Simplemente redirige, ya que guardamos localmente en cada cambio de input
+    router.push("/dashboard");
+  };
+
   return {
     questions: data?.randomInterview?.questions || [],
     currentStep,
@@ -64,6 +86,9 @@ export const useInterviewFlow = () => {
     handleNext,
     handleBack,
     saveLocalProgress: (id: string, val: string) => localStorage.setItem(`interview_q_${id}`, val),
-    getLocalProgress
+    getLocalProgress,
+    handleFinish,
+    handleSaveAndExit,
+    isFinishing: finishing,
   };
 };

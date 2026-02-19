@@ -47,6 +47,7 @@ export const schema = createSchema({
       signup(name: String!, email: String!, password: String!): AuthPayload!
       login(email: String!, password: String!): AuthPayload!
       submitAnswer(content: String!, questionId: String!): MutationResponse!
+      finishInterview(lastAnswerContent: String!, questionId: String!): MutationResponse!
     }
   `,
   resolvers: [

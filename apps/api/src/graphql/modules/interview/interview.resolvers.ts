@@ -17,13 +17,27 @@ export const interviewResolvers = {
     // Tipamos el contexto para evitar errores de 'any'
     submitAnswer: async (_: any, { content, questionId }: any, { currentUser }: GraphQLContext) => {
       if (!currentUser) throw new Error("No autorizado");
-
-      // Guardamos en Postgres (Prisma)
+      
       await prisma.interviewResponse.create({
         data: {
           content,
           questionId,
-          userId: currentUser.userId
+          userId: currentUser.userId,
+          isCompleted: false
+        }
+      });
+      return { id: questionId, success: true };
+    },
+
+    finishInterview: async (_: any, { lastAnswerContent, questionId }: any, { currentUser }: GraphQLContext) => {
+      if (!currentUser) throw new Error("No autorizado");
+
+      await prisma.interviewResponse.create({
+        data: {
+          content: lastAnswerContent,
+          questionId,
+          userId: currentUser.userId,
+          isCompleted: true
         }
       });
 
