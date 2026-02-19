@@ -22,13 +22,14 @@ export const useAuthActions = () => {
       secure: true,
       sameSite: 'lax'
     });
-  };
+
     // 3. Pequeño delay antes de redirigir al DASHBOARD para asegurar escritura en disco/cookie
     setTimeout(() => {
       router.push("/dashboard");
       router.refresh();
     }, 100);
-
+  };
+  
   const logout = () => {
     // 1. Borrar Cookie para el Middleware
     Cookies.remove('token');
