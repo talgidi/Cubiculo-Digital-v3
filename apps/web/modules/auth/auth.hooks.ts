@@ -15,14 +15,21 @@ export const useAuthActions = () => {
     localStorage.setItem("token", token);
     
     // 2. Guardar en COOKIES para el Middleware de Next.js
-    // 'expires: 7' mantiene la sesión por 7 días
-    Cookies.set('token', token, { expires: 7, secure: true, sameSite: 'strict' });
+    // 'expires: 1' mantiene la sesión por 1 día, ajusta según tus necesidades
+    Cookies.set('token', token, {
+      expires: 1,
+      path: '/',
+      secure: true,
+      sameSite: 'lax'
+    });
 
-    // 3. Redirigir al DASHBOARD, no al inicio
-    router.push("/dashboard");
-    router.refresh(); // Forzamos a Next.js a re-validar el Middleware
+    // 3. Pequeño delay antes de redirigir al DASHBOARD para asegurar escritura en disco/cookie
+    setTimeout(() => {
+      router.push("/dashboard");
+      router.refresh();
+    }, 100);
   };
-
+  
   const logout = () => {
     // 1. Borrar Cookie para el Middleware
     Cookies.remove('token');
