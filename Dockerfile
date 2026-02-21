@@ -45,4 +45,4 @@ COPY --from=builder /app ./
 EXPOSE 4000
 
 # Ejecutamos la API directamente desde su ruta de build
-CMD ["node", "apps/api/dist/index.js"]
+CMD ["sh", "-c", "pnpm --filter @cubiculo/db exec prisma migrate deploy && node apps/api/dist/index.js"]
