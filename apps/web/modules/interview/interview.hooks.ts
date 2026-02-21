@@ -59,6 +59,25 @@ export const useInterviewFlow = () => {
 
   const handleFinish = async (questionId: string, content: string) => {
     try {
+      const response = await finishInterview({ 
+        variables: { lastAnswerContent: content, questionId },
+        // Esto asegura que si el Dashboard pide el Feedback, no use caché vieja
+        refetchQueries: ["GetUserFeedback"] 
+      });
+      
+      if (response.data?.finishInterview?.success) {
+        localStorage.removeItem('interview_step');
+        // Redirigir con éxito confirmado
+        router.push("/dashboard?status=ready");
+      }
+    } catch (error) {
+      // Aquí capturas el error del throw que pusimos en el backend
+      alert("Hubo un problema con la IA, pero tus respuestas están a salvo.");
+    }
+  };
+
+  /*const handleFinish = async (questionId: string, content: string) => {
+    try {
       const response = await finishInterview({ variables: { lastAnswerContent: content, questionId } });
       if (response.data?.finishInterview?.success) {
         // Limpiamos el rastro local para una nueva sesión futura
@@ -69,7 +88,7 @@ export const useInterviewFlow = () => {
     } catch (error) {
       console.error("Error al finalizar:", error);
     }
-  };
+  };*/
 
   const handleSaveAndExit = () => {
     // Simplemente redirige, ya que guardamos localmente en cada cambio de input
