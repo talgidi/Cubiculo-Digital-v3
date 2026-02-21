@@ -32,7 +32,10 @@ RUN pnpm --filter @cubiculo/api run build
 # -----------------------------
 FROM node:20 AS runner
 
-# Instalamos openssl (Indispensable para Supabase)
+# 1. Agregamos estas líneas para que pnpm esté disponible en el runner
+RUN corepack enable && corepack prepare pnpm@10.28.1 --activate
+
+# Instalamos openssl (Obligatorio para Supabase)
 RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -44,5 +47,5 @@ COPY --from=builder /app ./
 
 EXPOSE 4000
 
-# Aplicamos migraciones pendientes y luego levantamos la API
-CMD ["node", "apps/api/dist/index.js"]
+# Ejecutamos la API directamente desde su ruta de build
+CMD ["sh", "-c", "pnpm --filter @cubiculo/db exec prisma migrate deploy && node apps/api/dist/index.js"]
