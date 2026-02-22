@@ -23,7 +23,7 @@ export const aiService = {
 
     try {
         const response = await openai.chat.completions.create({
-        model: "gpt-4-turbo-preview", // O gpt-3.5-turbo para ahorrar costos
+        model: "gpt-4.1",
         messages: [{ role: "system", content: prompt }],
         temperature: 0.7,
         });

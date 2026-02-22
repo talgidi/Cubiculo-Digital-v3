@@ -79,8 +79,7 @@ export const interviewResolvers = {
         throw new Error("Error interno al procesar el feedback");
       }
     }
-  }
-};
+
    /* finishInterview: async (_: any, { lastAnswerContent, questionId }: any, { currentUser }: any) => {
       if (!currentUser) throw new Error("No autorizado");
 
