@@ -10,6 +10,7 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import { createPersistedQueryLink } from "@apollo/client/link/persisted-queries";
 import sha256 from "crypto-js/sha256";
+import Cookies from "js-cookie";
 
 /**
  * 1. CONFIGURACIÓN DEL CACHÉ (InMemoryCache)
@@ -35,7 +36,11 @@ const cache = new InMemoryCache({
  * Extrae el token del localStorage y lo inyecta en cada petición.
  */
 const authLink = setContext((_, { headers }) => {
-  const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+  // Intentar obtener del localStorage, y si falla (SSR), intentar de Cookies
+  const token = typeof window !== 'undefined' 
+    ? localStorage.getItem("token") || Cookies.get('token')
+    : null;
+
   return {
     headers: {
       ...headers,

@@ -8,24 +8,21 @@ export const useInterviewFlow = () => {
   const [finishInterview, { loading: finishing }] = useMutation(FINISH_INTERVIEW);
   // A. Obtener datos del servidor
   const { data, loading: queryLoading } = useQuery(GET_RANDOM_INTERVIEW, {
-    // IMPORTANTE: Mantenemos la misma data durante la sesión
-    fetchPolicy: 'cache-first'
+    fetchPolicy: 'network-only', // Forzamos carga fresca para evitar arrays vacíos de caché antigua
+    nextFetchPolicy: 'cache-first'
   }); 
   // B. Estado del paso actual
-  const [currentStep, setCurrentStep] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return Number(localStorage.getItem('interview_step') || 0);
-    }
-    return 0;
-  });
+  const [currentStep, setCurrentStep] = useState(0);
   // C. Mutación para guardar en DB
   const [submitAnswer, { loading: mutationLoading }] = useMutation(SUBMIT_ANSWER);
 
-  // Persistir el paso actual
+  // Cargar el paso de localStorage SOLO después del montaje (Client Side)
   useEffect(() => {
-    localStorage.setItem('interview_step', currentStep.toString());
-  }, [currentStep]);
-
+    const savedStep = localStorage.getItem('interview_step');
+    if (savedStep) {
+      setCurrentStep(Number(savedStep));
+    }
+  }, []);
 
   // Acción: Guardar progreso en LocalStorage (Caché de resiliencia)
   const saveLocalProgress = (questionId: string, content: string) => {
@@ -49,8 +46,8 @@ export const useInterviewFlow = () => {
       }
     } catch (error) {
       // Si falla, el error saldrá en consola pero no avanzará la pregunta (correcto)
-      console.error("Fallo al guardar en DB:", error);
-      alert("Error al guardar: Asegúrate de estar logueado correctamente.");
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      alert(`Error al guardar en servidor: ${message}`);
     }
   };
 
@@ -62,6 +59,25 @@ export const useInterviewFlow = () => {
 
   const handleFinish = async (questionId: string, content: string) => {
     try {
+      const response = await finishInterview({ 
+        variables: { lastAnswerContent: content, questionId },
+        // Esto asegura que si el Dashboard pide el Feedback, no use caché vieja
+        refetchQueries: ["GetUserFeedback"] 
+      });
+      
+      if (response.data?.finishInterview?.success) {
+        localStorage.removeItem('interview_step');
+        // Redirigir con éxito confirmado
+        router.push("/dashboard?status=ready");
+      }
+    } catch (error) {
+      // Aquí capturas el error del throw que pusimos en el backend
+      alert("Hubo un problema con la IA, pero tus respuestas están a salvo.");
+    }
+  };
+
+  /*const handleFinish = async (questionId: string, content: string) => {
+    try {
       const response = await finishInterview({ variables: { lastAnswerContent: content, questionId } });
       if (response.data?.finishInterview?.success) {
         // Limpiamos el rastro local para una nueva sesión futura
@@ -72,7 +88,7 @@ export const useInterviewFlow = () => {
     } catch (error) {
       console.error("Error al finalizar:", error);
     }
-  };
+  };*/
 
   const handleSaveAndExit = () => {
     // Simplemente redirige, ya que guardamos localmente en cada cambio de input
@@ -82,7 +98,7 @@ export const useInterviewFlow = () => {
   return {
     questions: data?.randomInterview?.questions || [],
     currentStep,
-    loading: queryLoading || mutationLoading,
+    loading: queryLoading,
     handleNext,
     handleBack,
     saveLocalProgress: (id: string, val: string) => localStorage.setItem(`interview_q_${id}`, val),
