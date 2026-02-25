@@ -13,14 +13,17 @@ export const redis = createClient({
   // Si redisUrl es undefined, aquí forzamos que falle con un mensaje claro
   url: redisUrl || 'redis://localhost:6379', 
   socket: {
-    family: 4,
-    reconnectStrategy: (retries) => Math.min(retries * 100, 3000)
+    reconnectStrategy: (retries) => {
+      console.log(`🔄 Reintentando conexión a Redis: intento ${retries}`);
+      return Math.min(retries * 100, 3000); // Reintenta cada 3 segundos máximo
+    }
   }
 });
 
 redis.on('error', (err) => {
   console.error('❌ Error de conexión:', err.message);
 });
+redis.on('connect', () => console.log('✅ Conectado a Redis Cloud'));
 
 export const connectRedis = async () => {
   if (!redis.isOpen && redisUrl) {
