@@ -18,52 +18,37 @@ function escapeHtml(str: string): string {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 
-const css = `
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Helvetica','Arial',sans-serif;background:#fff;color:#1e1e2f;line-height:1.4}
-.w{width:750px}
-.tc{text-align:center}
-.bl{width:80px;height:4px;background:#1980e6;margin:0 auto 28px;border-radius:2px}
-.ct{font-size:32px;font-weight:900;color:#111827;margin-bottom:6px}
-.cs{font-size:17px;color:#637588;margin-bottom:32px}
-.cm{font-size:12px;color:#9ca3af}
-.st{font-size:20px;font-weight:800;color:#111827;padding-bottom:8px;border-bottom:3px solid #1980e6}
-.c{border:1px solid #e5e7eb;border-radius:8px;background:#fafbfc;padding:14px 16px}
-.ch{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.cn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#eef2ff;color:#4f46e5;font-weight:800;font-size:12px;flex-shrink:0}
-.b{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600;letter-spacing:0.2px}
-.bd{background:#f5f3ff;color:#7c3aed}
-.bt{background:#eff6ff;color:#2563eb}
-.cq{font-size:15px;font-weight:700;color:#111827;margin-bottom:4px}
-.cd{font-size:13px;color:#637588;margin-bottom:10px;line-height:1.4}
-.ab{background:#f3f4f6;padding:10px 14px;border-radius:6px;border-left:3px solid #1980e6}
-.al{font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px}
-.at{font-size:13px;color:#1e1e2f;white-space:pre-wrap;line-height:1.6}
+const PDF_SCOPE = '_p';
+
+const pdfCss = `
+.${PDF_SCOPE} * { margin: 0; padding: 0; box-sizing: border-box; }
+.${PDF_SCOPE} { font-family: 'Helvetica', 'Arial', sans-serif; background: #ffffff; color: #1e1e2f; line-height: 1.4; width: 750px; }
+.${PDF_SCOPE} .tc { text-align: center; }
+.${PDF_SCOPE} .bl { width: 80px; height: 4px; background: #1980e6; margin: 0 auto 28px; border-radius: 2px; }
+.${PDF_SCOPE} .ct { font-size: 32px; font-weight: 900; color: #111827; margin-bottom: 6px; }
+.${PDF_SCOPE} .cs { font-size: 17px; color: #637588; margin-bottom: 32px; }
+.${PDF_SCOPE} .cm { font-size: 12px; color: #9ca3af; }
+.${PDF_SCOPE} .st { font-size: 20px; font-weight: 800; color: #111827; padding-bottom: 8px; border-bottom: 3px solid #1980e6; }
+.${PDF_SCOPE} .c { border: 1px solid #e5e7eb; border-radius: 8px; background: #fafbfc; padding: 14px 16px; }
+.${PDF_SCOPE} .ch { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.${PDF_SCOPE} .cn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: #eef2ff; color: #4f46e5; font-weight: 800; font-size: 12px; flex-shrink: 0; }
+.${PDF_SCOPE} .b { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; letter-spacing: 0.2px; }
+.${PDF_SCOPE} .bd { background: #f5f3ff; color: #7c3aed; }
+.${PDF_SCOPE} .bt { background: #eff6ff; color: #2563eb; }
+.${PDF_SCOPE} .cq { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 4px; }
+.${PDF_SCOPE} .cd { font-size: 13px; color: #637588; margin-bottom: 10px; line-height: 1.4; }
+.${PDF_SCOPE} .ab { background: #f3f4f6; padding: 10px 14px; border-radius: 6px; border-left: 3px solid #1980e6; }
+.${PDF_SCOPE} .al { font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+.${PDF_SCOPE} .at { font-size: 13px; color: #1e1e2f; white-space: pre-wrap; line-height: 1.6; }
+.${PDF_SCOPE} .fh { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 16px 20px; background: #fefce8; border: 1px solid #fde68a; border-radius: 8px; }
+.${PDF_SCOPE} .fi { font-size: 24px; }
+.${PDF_SCOPE} .fht h2 { font-size: 18px; font-weight: 800; color: #854d0e; margin-bottom: 1px; }
+.${PDF_SCOPE} .fht p { font-size: 12px; color: #a16207; }
 `;
-
-const cssFeedback = `
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Helvetica','Arial',sans-serif;background:#fff;color:#1e1e2f;line-height:1.4}
-.w{width:750px}
-.tc{text-align:center}
-.st{font-size:20px;font-weight:800;color:#111827;padding-bottom:8px;border-bottom:3px solid #1980e6}
-.fh{display:flex;align-items:center;gap:12px;margin-top:14px;padding:16px 20px;background:#fefce8;border:1px solid #fde68a;border-radius:8px}
-.fi{font-size:24px}
-.fht h2{font-size:18px;font-weight:800;color:#854d0e;margin-bottom:1px}
-.fht p{font-size:12px;color:#a16207}
-`;
-
-function w(html: string): string {
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${css}</style></head><body><div class="w">${html}</div></body></html>`;
-}
-
-function wFb(html: string): string {
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${cssFeedback}</style></head><body><div class="w">${html}</div></body></html>`;
-}
 
 function buildCoverHtml(): string {
   const d = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
-  return w(`<div class="tc" style="padding:60px 40px 20px">
+  return `<div class="tc" style="padding:60px 40px 20px">
     <div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#1980e6,#1a1a2e);margin:0 auto 24px;display:flex;align-items:center;justify-content:center">
       <span style="color:#fff;font-size:34px;font-weight:900">B</span>
     </div>
@@ -73,15 +58,15 @@ function buildCoverHtml(): string {
     <div style="width:200px;height:1px;background:#e5e7eb;margin:0 auto 24px"></div>
     <div class="cm">Generado el ${escapeHtml(d)}</div>
     <div style="margin-top:40px;padding-top:20px;border-top:1px solid #e5e7eb;font-size:10px;color:#9ca3af">Cubículo Digital · Business Architecture</div>
-  </div>`);
+  </div>`;
 }
 
 function buildSectionTitleHtml(title: string): string {
-  return w(`<div class="st">${escapeHtml(title)}</div>`);
+  return `<div class="st">${escapeHtml(title)}</div>`;
 }
 
 function buildCardHtml(r: AnswerItem, i: number): string {
-  return w(`<div class="c">
+  return `<div class="c">
     <div class="ch">
       <span class="cn">${i + 1}</span>
       <span class="b bd">${escapeHtml(r.questionDepartment)}</span>
@@ -93,18 +78,18 @@ function buildCardHtml(r: AnswerItem, i: number): string {
       <div class="al">Tu Respuesta</div>
       <div class="at">${escapeHtml(r.answerContent)}</div>
     </div>
-  </div>`);
+  </div>`;
 }
 
 function buildFeedbackHeaderHtml(f: FeedbackItem): string {
   const d = new Date(f.createdAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-  return wFb(`<div>
+  return `<div>
     <div class="st tc">Feedback de la IA</div>
     <div class="fh">
       <span class="fi">✨</span>
       <div class="fht"><h2>Análisis Generado por IA</h2><p>Generado el ${escapeHtml(d)}</p></div>
     </div>
-  </div>`);
+  </div>`;
 }
 
 function buildMarkdownContent(responses: AnswerItem[], feedback: FeedbackItem | null): string {
@@ -129,15 +114,25 @@ function downloadBlob(c: string, f: string, m: string) {
 async function render(html: string): Promise<{ data: string; hMm: number; wMm: number }> {
   const mod = await import('html2canvas');
   const h2c = mod.default;
+
+  const styleEl = document.createElement('style');
+  styleEl.textContent = pdfCss;
+  document.head.appendChild(styleEl);
+
   const el = document.createElement('div');
+  el.className = PDF_SCOPE;
   el.innerHTML = html;
-  el.style.cssText = 'position:fixed;top:0;left:0;z-index:-9999;background:#fff;width:750px;overflow:hidden';
+  el.style.cssText = 'position:fixed;top:0;left:0;z-index:-9999;overflow:hidden';
   document.body.appendChild(el);
+
   try {
     const cv = await h2c(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff', allowTaint: false, logging: false });
     const wMm = 190;
     return { data: cv.toDataURL('image/jpeg', 0.95), hMm: cv.height * (wMm / cv.width), wMm };
-  } finally { document.body.removeChild(el); }
+  } finally {
+    document.body.removeChild(el);
+    document.head.removeChild(styleEl);
+  }
 }
 
 function cleanMarkdown(text: string): string {
