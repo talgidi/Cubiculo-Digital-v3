@@ -6,6 +6,7 @@ import { ChevronRight, Save } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { useInterviewFlow, useInterviewResults } from '@/modules/interview/interview.hooks';
 import { FINISH_INTERVIEW } from '@/modules/interview/interview.api';
+import { exportToPdf, exportToMarkdown } from '@/modules/interview/interview.export';
 import { ProgressHeader } from './components/ProgressHeader';
 import { QuestionCard } from './components/QuestionCard';
 import { EditorArea } from './components/EditorArea';
@@ -89,7 +90,10 @@ export const InterviewView = () => {
           <div className="mx-auto max-w-4xl px-6 py-10 pb-32">
             <AnswersReview responses={responses} />
             {feedback && <FeedbackSection content={feedback.content} createdAt={feedback.createdAt} />}
-            <ExportToolbar onExportPdf={() => {}} onExportMarkdown={() => {}} />
+            <ExportToolbar
+              onExportPdf={() => exportToPdf(responses, feedback)}
+              onExportMarkdown={() => exportToMarkdown(responses, feedback)}
+            />
           </div>
         </div>
       </div>
