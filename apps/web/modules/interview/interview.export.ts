@@ -23,62 +23,57 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#039;');
 }
 
-const PDF_STYLES = `
+const PDF_PAGE_CSS = `
+  * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: 'Helvetica', 'Arial', sans-serif;
-    max-width: 750px;
-    margin: 0 auto;
-    padding: 48px 40px;
-    color: #1e1e2f;
     background: #ffffff;
     line-height: 1.5;
   }
-  .cover {
-    text-align: center;
-    padding: 100px 40px;
-    page-break-after: always;
+  .wrap {
+    width: 750px;
+    padding: 48px 40px;
+    color: #1e1e2f;
   }
-  .cover .brand-line {
+  .center {
+    text-align: center;
+  }
+  .brand-line {
     width: 80px;
     height: 4px;
     background: #1980e6;
     margin: 0 auto 32px;
     border-radius: 2px;
   }
-  .cover h1 {
+  .cover-title {
     font-size: 36px;
     font-weight: 900;
     color: #111827;
-    margin: 0 0 8px;
     letter-spacing: -0.5px;
+    margin-bottom: 8px;
   }
-  .cover .subtitle {
+  .cover-sub {
     font-size: 18px;
     color: #637588;
-    margin: 0 0 40px;
+    margin-bottom: 40px;
   }
-  .cover .meta {
+  .cover-meta {
     font-size: 13px;
     color: #9ca3af;
-    margin: 0;
   }
   .section-title {
     font-size: 24px;
     font-weight: 800;
     color: #111827;
-    margin: 0 0 24px;
     padding-bottom: 12px;
     border-bottom: 3px solid #1980e6;
+    width: 100%;
   }
-  .answer-card {
-    margin-bottom: 28px;
-    padding: 24px;
+  .card {
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     background: #fafbfc;
-  }
-  .answer-card:hover {
-    border-color: #1980e6;
+    padding: 24px;
   }
   .card-header {
     display: flex;
@@ -86,7 +81,7 @@ const PDF_STYLES = `
     gap: 12px;
     margin-bottom: 16px;
   }
-  .card-number {
+  .card-num {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -106,160 +101,134 @@ const PDF_STYLES = `
     font-weight: 600;
     letter-spacing: 0.3px;
   }
-  .badge-dept {
-    background: #f5f3ff;
-    color: #7c3aed;
-  }
-  .badge-topic {
-    background: #eff6ff;
-    color: #2563eb;
-  }
-  .card-question {
+  .badge-dept { background: #f5f3ff; color: #7c3aed; }
+  .badge-topic { background: #eff6ff; color: #2563eb; }
+  .card-q {
     font-size: 17px;
     font-weight: 700;
     color: #111827;
-    margin: 0 0 6px;
+    margin-bottom: 6px;
   }
-  .card-description {
+  .card-desc {
     font-size: 14px;
     color: #637588;
-    margin: 0 0 16px;
+    margin-bottom: 16px;
     line-height: 1.5;
   }
-  .answer-box {
+  .ans-box {
     background: #f3f4f6;
     padding: 18px 20px;
     border-radius: 8px;
     border-left: 4px solid #1980e6;
   }
-  .answer-label {
+  .ans-label {
     font-size: 11px;
     font-weight: 700;
     color: #9ca3af;
-    margin: 0 0 8px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    margin-bottom: 8px;
   }
-  .answer-text {
+  .ans-text {
     font-size: 14px;
     color: #1e1e2f;
-    margin: 0;
     white-space: pre-wrap;
     line-height: 1.7;
   }
-  .feedback-section {
-    page-break-before: always;
+  .fb-box {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fafbfc;
+    padding: 28px;
+    margin-top: 24px;
   }
-  .feedback-header {
+  .fb-content {
+    font-size: 14px;
+    color: #1e1e2f;
+    white-space: pre-wrap;
+    line-height: 1.8;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+  }
+  .fb-header {
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-bottom: 28px;
+    margin-top: 24px;
     padding: 24px;
     background: #fefce8;
     border: 1px solid #fde68a;
     border-radius: 12px;
   }
-  .feedback-icon {
-    font-size: 28px;
-  }
-  .feedback-header-text h2 {
+  .fb-icon { font-size: 28px; }
+  .fb-header-text h2 {
     font-size: 22px;
     font-weight: 800;
     color: #854d0e;
-    margin: 0 0 2px;
+    margin-bottom: 2px;
   }
-  .feedback-header-text p {
+  .fb-header-text p {
     font-size: 13px;
     color: #a16207;
-    margin: 0;
-  }
-  .feedback-content {
-    padding: 28px;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    background: #fafbfc;
-  }
-  .feedback-content pre {
-    font-family: 'Helvetica', 'Arial', sans-serif;
-    font-size: 14px;
-    color: #1e1e2f;
-    margin: 0;
-    white-space: pre-wrap;
-    line-height: 1.8;
   }
 `;
 
-function buildAnswersHtml(responses: AnswerItem[]): string {
-  let html = '';
-  responses.forEach((r, i) => {
-    html += `
-      <div class="answer-card">
-        <div class="card-header">
-          <span class="card-number">${i + 1}</span>
-          <span class="badge badge-dept">${escapeHtml(r.questionDepartment)}</span>
-          <span class="badge badge-topic">${escapeHtml(r.questionTopic)}</span>
-        </div>
-        <h3 class="card-question">${escapeHtml(r.questionTitle)}</h3>
-        <p class="card-description">${escapeHtml(r.questionDescription)}</p>
-        <div class="answer-box">
-          <p class="answer-label">Tu Respuesta</p>
-          <p class="answer-text">${escapeHtml(r.answerContent)}</p>
-        </div>
-      </div>
-    `;
-  });
-  return html;
+function wrapHtml(bodyHtml: string): string {
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${PDF_PAGE_CSS}</style></head><body><div class="wrap">${bodyHtml}</div></body></html>`;
 }
 
-function buildFeedbackHtml(feedback: FeedbackItem): string {
+function buildCoverHtml(): string {
+  const date = new Date().toLocaleDateString('es-ES', {
+    year: 'numeric', month: 'long', day: 'numeric',
+  });
+  return wrapHtml(`
+    <div class="center" style="padding-top: 100px;">
+      <div class="brand-line"></div>
+      <div class="cover-title">Biblia Corporativa</div>
+      <div class="cover-sub">Reporte de Entrevista Estratégica</div>
+      <div class="cover-meta">Generado el ${escapeHtml(date)}</div>
+    </div>
+  `);
+}
+
+function buildSectionTitleHtml(title: string): string {
+  return wrapHtml(`<div class="section-title">${escapeHtml(title)}</div>`);
+}
+
+function buildCardHtml(response: AnswerItem, index: number): string {
+  return wrapHtml(`
+    <div class="card">
+      <div class="card-header">
+        <span class="card-num">${index + 1}</span>
+        <span class="badge badge-dept">${escapeHtml(response.questionDepartment)}</span>
+        <span class="badge badge-topic">${escapeHtml(response.questionTopic)}</span>
+      </div>
+      <div class="card-q">${escapeHtml(response.questionTitle)}</div>
+      <div class="card-desc">${escapeHtml(response.questionDescription)}</div>
+      <div class="ans-box">
+        <div class="ans-label">Tu Respuesta</div>
+        <div class="ans-text">${escapeHtml(response.answerContent)}</div>
+      </div>
+    </div>
+  `);
+}
+
+function buildFeedbackSectionHtml(feedback: FeedbackItem): string {
   const date = new Date(feedback.createdAt).toLocaleDateString('es-ES', {
     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
   });
-  return `
-    <div class="feedback-section">
-      <div class="section-title">Feedback de la IA</div>
-      <div class="feedback-header">
-        <div class="feedback-icon">✨</div>
-        <div class="feedback-header-text">
-          <h2>Análisis Generado por IA</h2>
-          <p>Generado el ${escapeHtml(date)}</p>
-        </div>
-      </div>
-      <div class="feedback-content">
-        <pre>${escapeHtml(feedback.content)}</pre>
+  return wrapHtml(`
+    <div class="section-title center">Feedback de la IA</div>
+    <div class="fb-header">
+      <span class="fb-icon">✨</span>
+      <div class="fb-header-text">
+        <h2>Análisis Generado por IA</h2>
+        <p>Generado el ${escapeHtml(date)}</p>
       </div>
     </div>
-  `;
-}
-
-function buildAnswersPage(responses: AnswerItem[]): string {
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head><meta charset="utf-8"><style>${PDF_STYLES}</style></head>
-    <body>
-      <div class="cover">
-        <div class="brand-line"></div>
-        <h1>Biblia Corporativa</h1>
-        <p class="subtitle">Reporte de Entrevista Estratégica</p>
-        <p class="meta">Generado el ${escapeHtml(new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }))}</p>
-      </div>
-      <div class="section-title">Preguntas y Respuestas</div>
-      ${buildAnswersHtml(responses)}
-    </body>
-    </html>
-  `;
-}
-
-function buildFeedbackPage(feedback: FeedbackItem): string {
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head><meta charset="utf-8"><style>${PDF_STYLES}</style></head>
-    <body>${buildFeedbackHtml(feedback)}</body>
-    </html>
-  `;
+    <div class="fb-box">
+      <div class="fb-content">${escapeHtml(feedback.content)}</div>
+    </div>
+  `);
 }
 
 function buildMarkdownContent(responses: AnswerItem[], feedback: FeedbackItem | null): string {
@@ -300,7 +269,7 @@ function downloadBlob(content: string, filename: string, mimeType: string) {
   URL.revokeObjectURL(url);
 }
 
-async function renderToCanvas(html: string): Promise<HTMLCanvasElement> {
+async function renderToCanvas(html: string): Promise<{ imgData: string; heightMm: number; widthMm: number }> {
   const html2canvasModule = await import('html2canvas');
   const html2canvas = html2canvasModule.default;
 
@@ -321,38 +290,47 @@ async function renderToCanvas(html: string): Promise<HTMLCanvasElement> {
       allowTaint: false,
       logging: false,
     });
-    return canvas;
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const pageWidthMm = 190; // A4 width in mm minus margins
+    const ratio = pageWidthMm / canvas.width;
+    return { imgData, heightMm: canvas.height * ratio, widthMm: pageWidthMm };
   } finally {
     document.body.removeChild(container);
-  }
-}
-
-function addCanvasToPdf(pdf: import('jspdf').jsPDF, canvas: HTMLCanvasElement): void {
-  const imgData = canvas.toDataURL('image/jpeg', 0.95);
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-
-  const ratio = pageWidth / canvas.width;
-  const scaledHeight = canvas.height * ratio;
-  const pagesNeeded = Math.ceil(scaledHeight / pageHeight);
-
-  for (let i = 0; i < pagesNeeded; i++) {
-    if (i > 0) pdf.addPage();
-    pdf.addImage(imgData, 'JPEG', 0, -i * pageHeight, pageWidth, scaledHeight);
   }
 }
 
 export const exportToPdf = async (responses: AnswerItem[], feedback: FeedbackItem | null) => {
   const { jsPDF } = await import('jspdf');
   const pdf = new jsPDF('p', 'mm', 'a4');
+  const pageHeight = pdf.internal.pageSize.getHeight();
 
-  const answersCanvas = await renderToCanvas(buildAnswersPage(responses));
-  addCanvasToPdf(pdf, answersCanvas);
+  // 1. Portada (página propia)
+  const cover = await renderToCanvas(buildCoverHtml());
+  pdf.addImage(cover.imgData, 'JPEG', 10, 0, cover.widthMm, cover.heightMm);
+  pdf.addPage();
 
+  // 2. Título de sección + cada card individual
+  const title = await renderToCanvas(buildSectionTitleHtml('Preguntas y Respuestas'));
+  pdf.addImage(title.imgData, 'JPEG', 10, 10, title.widthMm, title.heightMm);
+  let y = 10 + title.heightMm + 4;
+
+  for (let i = 0; i < responses.length; i++) {
+    const card = await renderToCanvas(buildCardHtml(responses[i], i));
+
+    if (y + card.heightMm > pageHeight - 10) {
+      pdf.addPage();
+      y = 10;
+    }
+
+    pdf.addImage(card.imgData, 'JPEG', 10, y, card.widthMm, card.heightMm);
+    y += card.heightMm + 6;
+  }
+
+  // 3. Feedback (página nueva, mismo estilo)
   if (feedback) {
-    const feedbackCanvas = await renderToCanvas(buildFeedbackPage(feedback));
     pdf.addPage();
-    addCanvasToPdf(pdf, feedbackCanvas);
+    const fb = await renderToCanvas(buildFeedbackSectionHtml(feedback));
+    pdf.addImage(fb.imgData, 'JPEG', 10, 10, fb.widthMm, fb.heightMm);
   }
 
   pdf.save(`biblia-corporativa-${Date.now()}.pdf`);
