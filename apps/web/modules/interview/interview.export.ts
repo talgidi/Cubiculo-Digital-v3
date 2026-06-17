@@ -104,22 +104,23 @@ export const exportToPdf = async (responses: AnswerItem[], feedback: FeedbackIte
 
   const element = document.createElement('div');
   element.innerHTML = buildHtmlContent(responses, feedback);
-  element.style.position = 'absolute';
-  element.style.left = '-9999px';
+  element.style.position = 'fixed';
   element.style.top = '0';
+  element.style.left = '0';
+  element.style.width = '800px';
+  element.style.opacity = '0.01';
+  element.style.zIndex = '-9999';
+  element.style.pointerEvents = 'none';
   document.body.appendChild(element);
 
   try {
-    await html2pdf()
-      .set({
-        margin: [10, 10],
-        filename: `biblia-corporativa-${Date.now()}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      })
-      .from(element)
-      .save();
+    await html2pdf(element, {
+      margin: [10, 10],
+      filename: `biblia-corporativa-${Date.now()}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    });
   } finally {
     document.body.removeChild(element);
   }
