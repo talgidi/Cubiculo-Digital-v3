@@ -63,16 +63,16 @@ function wFb(html: string): string {
 
 function buildCoverHtml(): string {
   const d = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
-  return w(`<div class="tc" style="padding:100px 40px 0">
-    <div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#1980e6,#1a1a2e);margin:0 auto 32px;display:flex;align-items:center;justify-content:center">
-      <span style="color:#fff;font-size:40px;font-weight:900">B</span>
+  return w(`<div class="tc" style="padding:60px 40px 20px">
+    <div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#1980e6,#1a1a2e);margin:0 auto 24px;display:flex;align-items:center;justify-content:center">
+      <span style="color:#fff;font-size:34px;font-weight:900">B</span>
     </div>
     <div class="bl"></div>
     <div class="ct">Biblia Corporativa</div>
     <div class="cs">Reporte de Entrevista Estratégica</div>
-    <div style="width:200px;height:1px;background:#e5e7eb;margin:0 auto 28px"></div>
+    <div style="width:200px;height:1px;background:#e5e7eb;margin:0 auto 24px"></div>
     <div class="cm">Generado el ${escapeHtml(d)}</div>
-    <div style="margin-top:60px;padding-top:24px;border-top:1px solid #e5e7eb;font-size:10px;color:#9ca3af">Cubículo Digital · Business Architecture</div>
+    <div style="margin-top:40px;padding-top:20px;border-top:1px solid #e5e7eb;font-size:10px;color:#9ca3af">Cubículo Digital · Business Architecture</div>
   </div>`);
 }
 
@@ -134,7 +134,7 @@ async function render(html: string): Promise<{ data: string; hMm: number; wMm: n
   el.style.cssText = 'position:fixed;top:0;left:0;z-index:-9999;background:#fff;width:750px;overflow:hidden';
   document.body.appendChild(el);
   try {
-    const cv = await h2c(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff', allowTaint: false, logging: false, width: 750, height: el.scrollHeight });
+    const cv = await h2c(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff', allowTaint: false, logging: false });
     const wMm = 190;
     return { data: cv.toDataURL('image/jpeg', 0.95), hMm: cv.height * (wMm / cv.width), wMm };
   } finally { document.body.removeChild(el); }
@@ -148,7 +148,6 @@ function cleanMarkdown(text: string): string {
     .replace(/^#{1,6}\s+/gm, '')
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
     .replace(/^[-*+]\s/gm, '• ')
-    .replace(/^\d+\.\s/gm, '')
     .replace(/^>\s/gm, '')
     .replace(/`{1,3}[^`]*`{1,3}/g, '')
     .trim();
@@ -193,7 +192,7 @@ export const exportToPdf = async (responses: AnswerItem[], feedback: FeedbackIte
 
   // 1. Cover (own page)
   const cv = await render(buildCoverHtml());
-  pdf.addImage(cv.data, 'JPEG', 10, (ph - cv.hMm) / 2, cv.wMm, cv.hMm);
+  pdf.addImage(cv.data, 'JPEG', 10, 15, cv.wMm, cv.hMm);
   pdf.addPage();
 
   // 2. Section title
