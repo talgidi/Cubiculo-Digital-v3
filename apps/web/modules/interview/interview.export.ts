@@ -23,237 +23,136 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#039;');
 }
 
-const PDF_PAGE_CSS = `
+const compactCss = `
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: 'Helvetica', 'Arial', sans-serif;
     background: #ffffff;
-    line-height: 1.5;
-  }
-  .wrap {
-    width: 750px;
-    padding: 48px 40px;
     color: #1e1e2f;
+    line-height: 1.4;
   }
-  .center {
-    text-align: center;
+  .w { width: 750px; }
+  .tc { text-align: center; }
+  .bl {
+    width: 80px; height: 4px; background: #1980e6;
+    margin: 0 auto 28px; border-radius: 2px;
   }
-  .brand-line {
-    width: 80px;
-    height: 4px;
-    background: #1980e6;
-    margin: 0 auto 32px;
-    border-radius: 2px;
+  .ct { font-size: 32px; font-weight: 900; color: #111827; margin-bottom: 6px; }
+  .cs { font-size: 17px; color: #637588; margin-bottom: 32px; }
+  .cm { font-size: 12px; color: #9ca3af; }
+  .st {
+    font-size: 20px; font-weight: 800; color: #111827;
+    padding-bottom: 8px; border-bottom: 3px solid #1980e6;
   }
-  .cover-title {
-    font-size: 36px;
-    font-weight: 900;
-    color: #111827;
-    letter-spacing: -0.5px;
-    margin-bottom: 8px;
+  .c {
+    border: 1px solid #e5e7eb; border-radius: 8px;
+    background: #fafbfc; padding: 14px 16px;
   }
-  .cover-sub {
-    font-size: 18px;
-    color: #637588;
-    margin-bottom: 40px;
+  .ch {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
   }
-  .cover-meta {
-    font-size: 13px;
-    color: #9ca3af;
+  .cn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #eef2ff; color: #4f46e5;
+    font-weight: 800; font-size: 12px; flex-shrink: 0;
   }
-  .section-title {
-    font-size: 24px;
-    font-weight: 800;
-    color: #111827;
-    padding-bottom: 12px;
-    border-bottom: 3px solid #1980e6;
-    width: 100%;
+  .b {
+    font-size: 10px; padding: 2px 8px; border-radius: 4px;
+    font-weight: 600; letter-spacing: 0.2px;
   }
-  .card {
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    background: #fafbfc;
-    padding: 24px;
+  .bd { background: #f5f3ff; color: #7c3aed; }
+  .bt { background: #eff6ff; color: #2563eb; }
+  .cq { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 4px; }
+  .cd { font-size: 13px; color: #637588; margin-bottom: 10px; line-height: 1.4; }
+  .ab {
+    background: #f3f4f6; padding: 10px 14px;
+    border-radius: 6px; border-left: 3px solid #1980e6;
   }
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
+  .al {
+    font-size: 10px; font-weight: 700; color: #9ca3af;
+    text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;
   }
-  .card-num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: #eef2ff;
-    color: #4f46e5;
-    font-weight: 800;
-    font-size: 14px;
-    flex-shrink: 0;
+  .at { font-size: 13px; color: #1e1e2f; white-space: pre-wrap; line-height: 1.6; }
+  .fb {
+    border: 1px solid #e5e7eb; border-radius: 8px;
+    background: #fafbfc; padding: 18px 20px; margin-top: 14px;
   }
-  .badge {
-    font-size: 11px;
-    padding: 3px 10px;
-    border-radius: 6px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-  }
-  .badge-dept { background: #f5f3ff; color: #7c3aed; }
-  .badge-topic { background: #eff6ff; color: #2563eb; }
-  .card-q {
-    font-size: 17px;
-    font-weight: 700;
-    color: #111827;
-    margin-bottom: 6px;
-  }
-  .card-desc {
-    font-size: 14px;
-    color: #637588;
-    margin-bottom: 16px;
-    line-height: 1.5;
-  }
-  .ans-box {
-    background: #f3f4f6;
-    padding: 18px 20px;
-    border-radius: 8px;
-    border-left: 4px solid #1980e6;
-  }
-  .ans-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: #9ca3af;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-  }
-  .ans-text {
-    font-size: 14px;
-    color: #1e1e2f;
-    white-space: pre-wrap;
-    line-height: 1.7;
-  }
-  .fb-box {
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    background: #fafbfc;
-    padding: 28px;
-    margin-top: 24px;
-  }
-  .fb-content {
-    font-size: 14px;
-    color: #1e1e2f;
-    white-space: pre-wrap;
-    line-height: 1.8;
+  .fc {
+    font-size: 13px; color: #1e1e2f;
+    white-space: pre-wrap; line-height: 1.7;
     font-family: 'Helvetica', 'Arial', sans-serif;
   }
-  .fb-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-top: 24px;
-    padding: 24px;
-    background: #fefce8;
-    border: 1px solid #fde68a;
-    border-radius: 12px;
+  .fh {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 14px; padding: 16px 20px;
+    background: #fefce8; border: 1px solid #fde68a; border-radius: 8px;
   }
-  .fb-icon { font-size: 28px; }
-  .fb-header-text h2 {
-    font-size: 22px;
-    font-weight: 800;
-    color: #854d0e;
-    margin-bottom: 2px;
-  }
-  .fb-header-text p {
-    font-size: 13px;
-    color: #a16207;
-  }
+  .fi { font-size: 24px; }
+  .fht h2 { font-size: 18px; font-weight: 800; color: #854d0e; margin-bottom: 1px; }
+  .fht p { font-size: 12px; color: #a16207; }
 `;
 
-function wrapHtml(bodyHtml: string): string {
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${PDF_PAGE_CSS}</style></head><body><div class="wrap">${bodyHtml}</div></body></html>`;
+function w(html: string): string {
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${compactCss}</style></head><body><div class="w">${html}</div></body></html>`;
 }
 
 function buildCoverHtml(): string {
-  const date = new Date().toLocaleDateString('es-ES', {
-    year: 'numeric', month: 'long', day: 'numeric',
-  });
-  return wrapHtml(`
-    <div class="center" style="padding-top: 100px;">
-      <div class="brand-line"></div>
-      <div class="cover-title">Biblia Corporativa</div>
-      <div class="cover-sub">Reporte de Entrevista Estratégica</div>
-      <div class="cover-meta">Generado el ${escapeHtml(date)}</div>
-    </div>
-  `);
+  return w(`<div class="tc" style="padding:80px 40px 0;">
+    <div class="bl"></div>
+    <div class="ct">Biblia Corporativa</div>
+    <div class="cs">Reporte de Entrevista Estratégica</div>
+    <div class="cm">Generado el ${escapeHtml(new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }))}</div>
+  </div>`);
 }
 
 function buildSectionTitleHtml(title: string): string {
-  return wrapHtml(`<div class="section-title">${escapeHtml(title)}</div>`);
+  return w(`<div class="st">${escapeHtml(title)}</div>`);
 }
 
-function buildCardHtml(response: AnswerItem, index: number): string {
-  return wrapHtml(`
-    <div class="card">
-      <div class="card-header">
-        <span class="card-num">${index + 1}</span>
-        <span class="badge badge-dept">${escapeHtml(response.questionDepartment)}</span>
-        <span class="badge badge-topic">${escapeHtml(response.questionTopic)}</span>
-      </div>
-      <div class="card-q">${escapeHtml(response.questionTitle)}</div>
-      <div class="card-desc">${escapeHtml(response.questionDescription)}</div>
-      <div class="ans-box">
-        <div class="ans-label">Tu Respuesta</div>
-        <div class="ans-text">${escapeHtml(response.answerContent)}</div>
-      </div>
+function buildCardHtml(r: AnswerItem, i: number): string {
+  return w(`<div class="c">
+    <div class="ch">
+      <span class="cn">${i + 1}</span>
+      <span class="b bd">${escapeHtml(r.questionDepartment)}</span>
+      <span class="b bt">${escapeHtml(r.questionTopic)}</span>
     </div>
-  `);
+    <div class="cq">${escapeHtml(r.questionTitle)}</div>
+    <div class="cd">${escapeHtml(r.questionDescription)}</div>
+    <div class="ab">
+      <div class="al">Tu Respuesta</div>
+      <div class="at">${escapeHtml(r.answerContent)}</div>
+    </div>
+  </div>`);
 }
 
-function buildFeedbackSectionHtml(feedback: FeedbackItem): string {
-  const date = new Date(feedback.createdAt).toLocaleDateString('es-ES', {
+function buildSectionTitleHtmlCentered(title: string): string {
+  return w(`<div class="st tc">${escapeHtml(title)}</div>`);
+}
+
+function buildFeedbackHtml(f: FeedbackItem): string {
+  const d = new Date(f.createdAt).toLocaleDateString('es-ES', {
     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
   });
-  return wrapHtml(`
-    <div class="section-title center">Feedback de la IA</div>
-    <div class="fb-header">
-      <span class="fb-icon">✨</span>
-      <div class="fb-header-text">
-        <h2>Análisis Generado por IA</h2>
-        <p>Generado el ${escapeHtml(date)}</p>
-      </div>
+  return w(`<div>
+    <div class="st tc">Feedback de la IA</div>
+    <div class="fh">
+      <span class="fi">✨</span>
+      <div class="fht"><h2>Análisis Generado por IA</h2><p>Generado el ${escapeHtml(d)}</p></div>
     </div>
-    <div class="fb-box">
-      <div class="fb-content">${escapeHtml(feedback.content)}</div>
-    </div>
-  `);
+    <div class="fb"><div class="fc">${escapeHtml(f.content)}</div></div>
+  </div>`);
 }
 
 function buildMarkdownContent(responses: AnswerItem[], feedback: FeedbackItem | null): string {
   const now = new Date().toLocaleDateString('es-ES', {
     year: 'numeric', month: 'long', day: 'numeric',
   });
-
-  let md = `# Biblia Corporativa\n\n`;
-  md += `**Resultados de Entrevista** — Generado el ${now}\n\n`;
-  md += `---\n\n`;
-  md += `## Preguntas y Respuestas\n\n`;
-
+  let md = `# Biblia Corporativa\n\n**Resultados de Entrevista** — Generado el ${now}\n\n---\n\n## Preguntas y Respuestas\n\n`;
   responses.forEach((r, i) => {
-    md += `### ${i + 1}. ${r.questionTitle}\n\n`;
-    md += `**Departamento:** ${r.questionDepartment} | **Tópico:** ${r.questionTopic}\n\n`;
-    md += `${r.questionDescription}\n\n`;
-    md += `**Tu Respuesta:**\n> ${r.answerContent.replace(/\n/g, '\n> ')}\n\n`;
-    md += `---\n\n`;
+    md += `### ${i + 1}. ${r.questionTitle}\n\n**Departamento:** ${r.questionDepartment} | **Tópico:** ${r.questionTopic}\n\n${r.questionDescription}\n\n**Tu Respuesta:**\n> ${r.answerContent.replace(/\n/g, '\n> ')}\n\n---\n\n`;
   });
-
-  if (feedback) {
-    md += `## Feedback de la IA\n\n`;
-    md += `${feedback.content}\n\n`;
-  }
-
+  if (feedback) md += `## Feedback de la IA\n\n${feedback.content}\n\n`;
   return md;
 }
 
@@ -269,74 +168,69 @@ function downloadBlob(content: string, filename: string, mimeType: string) {
   URL.revokeObjectURL(url);
 }
 
-async function renderToCanvas(html: string): Promise<{ imgData: string; heightMm: number; widthMm: number }> {
-  const html2canvasModule = await import('html2canvas');
-  const html2canvas = html2canvasModule.default;
-
-  const container = document.createElement('div');
-  container.innerHTML = html;
-  container.style.position = 'fixed';
-  container.style.top = '0';
-  container.style.left = '0';
-  container.style.zIndex = '-9999';
-  container.style.background = '#ffffff';
-  document.body.appendChild(container);
-
+async function render(html: string): Promise<{ data: string; hMm: number; wMm: number }> {
+  const m = await import('html2canvas');
+  const h2c = m.default;
+  const el = document.createElement('div');
+  el.innerHTML = html;
+  el.style.cssText = 'position:fixed;top:0;left:0;z-index:-9999;background:#fff';
+  document.body.appendChild(el);
   try {
-    const canvas = await html2canvas(container, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      allowTaint: false,
-      logging: false,
-    });
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-    const pageWidthMm = 190; // A4 width in mm minus margins
-    const ratio = pageWidthMm / canvas.width;
-    return { imgData, heightMm: canvas.height * ratio, widthMm: pageWidthMm };
-  } finally {
-    document.body.removeChild(container);
+    const cv = await h2c(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff', allowTaint: false, logging: false });
+    const wMm = 190;
+    return { data: cv.toDataURL('image/jpeg', 0.95), hMm: cv.height * (wMm / cv.width), wMm };
+  } finally { document.body.removeChild(el); }
+}
+
+function addMultiPage(pdf: import('jspdf').jsPDF, data: string, hMm: number, wMm: number, top: number) {
+  const pH = pdf.internal.pageSize.getHeight();
+  let remaining = hMm;
+  let offset = 0;
+  let first = true;
+
+  while (remaining > 0) {
+    const yPos = first ? top : 0;
+    pdf.addImage(data, 'JPEG', 10, offset + yPos, wMm, hMm);
+    const consumed = first ? (pH - top) : pH;
+    remaining -= consumed;
+    if (remaining > 0) { pdf.addPage(); offset -= consumed; }
+    first = false;
   }
 }
 
 export const exportToPdf = async (responses: AnswerItem[], feedback: FeedbackItem | null) => {
   const { jsPDF } = await import('jspdf');
   const pdf = new jsPDF('p', 'mm', 'a4');
-  const pageHeight = pdf.internal.pageSize.getHeight();
+  const pH = pdf.internal.pageSize.getHeight();
 
-  // 1. Portada (página propia)
-  const cover = await renderToCanvas(buildCoverHtml());
-  pdf.addImage(cover.imgData, 'JPEG', 10, 0, cover.widthMm, cover.heightMm);
+  // 1. Cover (own page)
+  const cv = await render(buildCoverHtml());
+  pdf.addImage(cv.data, 'JPEG', 10, 0, cv.wMm, cv.hMm);
   pdf.addPage();
 
-  // 2. Título de sección + cada card individual
-  const title = await renderToCanvas(buildSectionTitleHtml('Preguntas y Respuestas'));
-  pdf.addImage(title.imgData, 'JPEG', 10, 10, title.widthMm, title.heightMm);
-  let y = 10 + title.heightMm + 4;
+  // 2. Section title "Preguntas y Respuestas"
+  const st = await render(buildSectionTitleHtml('Preguntas y Respuestas'));
+  pdf.addImage(st.data, 'JPEG', 10, 10, st.wMm, st.hMm);
+  let y = 10 + st.hMm + 4;
 
+  // 3. Each answer card (atomic, compact)
   for (let i = 0; i < responses.length; i++) {
-    const card = await renderToCanvas(buildCardHtml(responses[i], i));
-
-    if (y + card.heightMm > pageHeight - 10) {
-      pdf.addPage();
-      y = 10;
-    }
-
-    pdf.addImage(card.imgData, 'JPEG', 10, y, card.widthMm, card.heightMm);
-    y += card.heightMm + 6;
+    const cd = await render(buildCardHtml(responses[i], i));
+    if (y + cd.hMm > pH - 10) { pdf.addPage(); y = 10; }
+    pdf.addImage(cd.data, 'JPEG', 10, y, cd.wMm, cd.hMm);
+    y += cd.hMm + 3;
   }
 
-  // 3. Feedback (página nueva, mismo estilo)
+  // 4. Feedback (multi-page, new page)
   if (feedback) {
     pdf.addPage();
-    const fb = await renderToCanvas(buildFeedbackSectionHtml(feedback));
-    pdf.addImage(fb.imgData, 'JPEG', 10, 10, fb.widthMm, fb.heightMm);
+    const fb = await render(buildFeedbackHtml(feedback));
+    addMultiPage(pdf, fb.data, fb.hMm, fb.wMm, 10);
   }
 
   pdf.save(`biblia-corporativa-${Date.now()}.pdf`);
 };
 
 export const exportToMarkdown = (responses: AnswerItem[], feedback: FeedbackItem | null) => {
-  const md = buildMarkdownContent(responses, feedback);
-  downloadBlob(md, `biblia-corporativa-${Date.now()}.md`, 'text/markdown;charset=utf-8');
+  downloadBlob(buildMarkdownContent(responses, feedback), `biblia-corporativa-${Date.now()}.md`, 'text/markdown;charset=utf-8');
 };
