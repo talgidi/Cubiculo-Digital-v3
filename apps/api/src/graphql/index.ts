@@ -31,6 +31,27 @@ export const schema = createSchema({
       questions: [InterviewQuestion!]!
     }
 
+    type InterviewResponseResult {
+      questionId: ID!
+      questionTitle: String!
+      questionDescription: String!
+      questionDepartment: String!
+      questionTopic: String!
+      answerContent: String!
+      isCompleted: Boolean!
+    }
+
+    type FeedbackResult {
+      id: ID!
+      content: String!
+      createdAt: String!
+    }
+
+    type InterviewResults {
+      responses: [InterviewResponseResult!]!
+      feedback: FeedbackResult
+    }
+
     type MutationResponse {
       id: ID!
       success: Boolean!
@@ -41,6 +62,7 @@ export const schema = createSchema({
       me: User
       users: [User!]!
       randomInterview: InterviewSession!
+      getInterviewResults: InterviewResults
     }
 
     type Mutation {
