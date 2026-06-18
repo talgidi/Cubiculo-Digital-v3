@@ -1,7 +1,22 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { SUBMIT_ANSWER, GET_RANDOM_INTERVIEW, FINISH_INTERVIEW } from "./interview.api";
+import { SUBMIT_ANSWER, GET_RANDOM_INTERVIEW, FINISH_INTERVIEW, GET_INTERVIEW_RESULTS } from "./interview.api";
+
+export const useInterviewResults = () => {
+  const { data, loading, error, refetch } = useQuery(GET_INTERVIEW_RESULTS, {
+    fetchPolicy: 'network-only',
+  });
+
+  return {
+    responses: data?.getInterviewResults?.responses || [],
+    feedback: data?.getInterviewResults?.feedback || null,
+    loading,
+    error,
+    refetch,
+    hasResults: (data?.getInterviewResults?.responses?.length ?? 0) > 0,
+  };
+};
 
 export const useInterviewFlow = () => {
   const router = useRouter();

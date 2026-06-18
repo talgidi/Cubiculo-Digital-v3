@@ -12,6 +12,41 @@ export const interviewResolvers = {
         id: crypto.randomUUID(),
         questions: shuffled.slice(0, 11) // Tomamos las 11
       };
+    },
+
+    getInterviewResults: async (_: any, __: any, { currentUser }: GraphQLContext) => {
+      if (!currentUser) throw new Error("No autorizado");
+
+      const responses = await prisma.interviewResponse.findMany({
+        where: { userId: currentUser.userId },
+        orderBy: { id: 'asc' }
+      });
+
+      const feedback = await prisma.feedback.findUnique({
+        where: { userId: currentUser.userId }
+      });
+
+      const mappedResponses = responses.map(res => {
+        const questionData = INTERVIEW_POOL.find(p => p.id === res.questionId);
+        return {
+          questionId: res.questionId,
+          questionTitle: questionData?.title || "Pregunta desconocida",
+          questionDescription: questionData?.description || "",
+          questionDepartment: questionData?.department || "",
+          questionTopic: questionData?.topic || "",
+          answerContent: res.content,
+          isCompleted: res.isCompleted
+        };
+      });
+
+      return {
+        responses: mappedResponses,
+        feedback: feedback ? {
+          id: feedback.id,
+          content: feedback.content,
+          createdAt: feedback.createdAt.toISOString()
+        } : null
+      };
     }
   },
   Mutation: {

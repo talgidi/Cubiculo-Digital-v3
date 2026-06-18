@@ -34,3 +34,24 @@ export const FINISH_INTERVIEW = gql`
     }
   }
 `;
+
+export const GET_INTERVIEW_RESULTS = gql`
+  query GetInterviewResults {
+    getInterviewResults {
+      responses {
+        questionId
+        questionTitle
+        questionDescription
+        questionDepartment
+        questionTopic
+        answerContent
+        isCompleted
+      }
+      feedback {
+        id
+        content
+        createdAt
+      }
+    }
+  }
+`;
